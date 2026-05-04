@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.openchronology.org/v0.2/universe.schema.json",
+  "title": "OpenChronology Universe Definition Schema",
+  "description": "Schema for .chronverse files — standalone, independently hostable universe definitions. A .chronverse file describes a single universe: its temporal anchoring, default calendar, canon scope declarations, and related universes. The real universe is a built-in and never requires a .chronverse file.",
+  "x-openchronology-version": "0.2",
+  "x-openchronology-status": "pre-release",
+  "x-openchronology-license": "CC-BY-4.0",
+  "x-openchronology-mime": "application/vnd.openchronology.universe+json",
+
+  "type": "object",
+  "required": ["meta", "universe"],
+  "additionalProperties": false,
+
+  "properties": {
+
+    "meta": {
+      "type": "object",
+      "description": "File-level metadata for the universe definition.",
+      "required": ["id", "version", "display_name"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Stable machine-readable identifier (e.g. 'star-wars-disney', 'tolkien-legendarium'). Used as the key in .chron definitions.universes."
+        },
+        "version": {
+          "type": "string",
+          "description": "Semver string for this universe definition (e.g. '1.0.0')."
+        },
+        "display_name": {
+          "type": "string",
+          "description": "Human-readable name of the universe (e.g. 'Star Wars Galaxy (Disney Canon)')."
+        },
+        "author": {
+          "description": "Author(s) or rights holder(s) for this universe definition.",
+          "oneOf": [
+            { "type": "string" },
+            { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+          ]
+        },
+        "license": {
+          "type": "string",
+          "description": "License identifier or rights statement."
+        },
+        "canonical_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "The authoritative hosted URL for this .chronverse file. SHOULD be populated for any universe intended for external reference."
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of the universe and its origin."
+        },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Freeform categorization (e.g. ['fictional', 'sci-fi', 'space-opera'])."
+        },
+        "$schema": {
+          "type": "string",
+          "format": "uri",
+          "description": "JSON Schema URL. Should point to this schema."
+        }
+      }
+    },
+
+    "universe": {
+      "type": "object",
+      "description": "The universe definition itself.",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+
+        "type": {
+          "type": "string",
+          "enum": ["absolute", "relative"],
+          "description": "'absolute' means the universe has its own independent time axis. 'relative' means it is anchored to another universe via an offset."
+        },
+
+        "anchor": {
+          "type": "object",
+          "description": "Required when type is 'relative'. Anchors this universe to a target universe at a known offset.",
+          "required": ["target_universe", "offset_value", "scale_factor"],
+          "additionalProperties": false,
+          "properties": {
+            "target_universe": {
+              "type": "string",
+              "description": "ID of the universe this is anchored to (typically 'real')."
+            },
+            "offset_value": {
+              "type": "string",
+              "description": "ISO 8601 datetime in the target universe that corresponds to this universe's epoch."
+            },
+            "scale_factor": {
+              "type": "number",
+              "description": "Time dilation factor. 1.0 = same rate as target. Use for time dilation or compressed fictional time."
+            }
+          }
+        },
+
+        "defaults": {
+          "type": "object",
+          "description": "Default values inherited by events that reference this universe and omit these fields.",
+          "additionalProperties": false,
+          "properties": {
+            "calendar": {
+              "type": "string",
+              "description": "Default calendar ID for events in this universe. Events that declare this universe MAY omit temporal.calendar."
+            },
+            "calendar_ref": {
+              "type": "string",
+              "description": "URL or path to the .chroncal file for the default calendar."
+            },
+            "body": {
+              "type": "string",
+              "description": "Default spatial body for events in this universe."
+            }
+          }
+        },
+
+        "canon_scopes": {
+          "type": "array",
+          "description": "Authoritative definitions of canon scope identifiers for this universe. Parsers validating relation.canon.scope values SHOULD check them against this array when the universe definition is resolved.",
+          "items": { "$ref": "#/$defs/canon_scope" }
+        },
+
+        "related_universes": {
+          "type": "array",
+          "description": "References to related universe definitions (variants, parallels, branches, alternate timelines).",
+          "items": { "$ref": "#/$defs/related_universe_ref" }
+        }
+      },
+
+      "if":   { "properties": { "type": { "const": "relative" } }, "required": ["type"] },
+      "then": { "required": ["anchor"] }
+    }
+
+  },
+
+  "$defs": {
+
+    "canon_scope": {
+      "type": "object",
+      "description": "A declared canon scope for this universe. The id here is the value used in relation.canon.scope.",
+      "required": ["id", "display_name"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Machine-readable identifier used in relation.canon.scope (e.g. 'canon', 'legends', 'non-canon')."
+        },
+        "display_name": {
+          "type": "string",
+          "description": "Human-readable name for this scope (e.g. 'Disney Canon', 'Star Wars Legends')."
+        },
+        "description": {
+          "type": "string",
+          "description": "Explanation of what this scope covers."
+        },
+        "supersedes": {
+          "type": "string",
+          "description": "ID of the canon scope this one replaces."
+        },
+        "superseded_by": {
+          "type": "string",
+          "description": "ID of the canon scope that replaced this one."
+        }
+      }
+    },
+
+    "related_universe_ref": {
+      "type": "object",
+      "description": "Reference to a related universe definition.",
+      "required": ["id", "relationship"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "ID of the related universe."
+        },
+        "ref": {
+          "type": "string",
+          "description": "URL or path to the related universe's .chronverse file."
+        },
+        "relationship": {
+          "type": "string",
+          "enum": ["variant_of", "parallel_to", "branch_of", "predecessor_of", "successor_of", "contains", "contained_by"],
+          "description": "Nature of the relationship between this universe and the referenced universe."
+        }
+      }
+    }
+
+  }
+}

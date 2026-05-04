@@ -1,0 +1,184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.openchronology.org/v0.2/manifest.schema.json",
+  "title": "OpenChronology Bundle Manifest Schema",
+  "description": "Schema for manifest.json — the required entry point descriptor inside every .chronpkg bundle. A .chronpkg is a ZIP archive of .chron event files, bundled .chroncal and .chronverse definitions, a /assets directory, and this manifest. The manifest provides a lightweight index of all contained events and a stable entry point for parsers.",
+  "x-openchronology-version": "0.2",
+  "x-openchronology-status": "pre-release",
+  "x-openchronology-license": "CC-BY-4.0",
+  "x-openchronology-mime": "application/vnd.openchronology.package+zip",
+  "x-openchronology-note": "This schema validates the manifest.json file inside the archive, not the .chronpkg ZIP envelope itself.",
+
+  "type": "object",
+  "required": ["meta", "events"],
+  "additionalProperties": false,
+
+  "properties": {
+
+    "meta": {
+      "type": "object",
+      "description": "Package-level metadata.",
+      "required": ["schema_version", "package_id", "title"],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "const": "0.2",
+          "description": "Must be '0.2'. Parsers use this to select the correct parsing rules."
+        },
+        "package_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "UUID-v4 uniquely identifying this package."
+        },
+        "title": {
+          "type": "string",
+          "description": "Human-readable name of this bundle (e.g. 'The Fellowship of the Ring — Timeline')."
+        },
+        "description": {
+          "type": "string",
+          "description": "Summary of the bundle's content and scope."
+        },
+        "author": {
+          "description": "Author(s) of the bundled content.",
+          "oneOf": [
+            { "type": "string" },
+            { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+          ]
+        },
+        "version": {
+          "type": "string",
+          "description": "Semver string for this bundle release (e.g. '1.0.0')."
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 datetime when this bundle was first created."
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 datetime when this bundle was last updated."
+        },
+        "license": {
+          "type": "string",
+          "description": "License identifier for the bundle's content (e.g. 'CC-BY-4.0')."
+        },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "canonical_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Authoritative hosted URL for this bundle, if published."
+        },
+        "$schema": {
+          "type": "string",
+          "format": "uri",
+          "description": "JSON Schema URL for validation. Should point to this schema."
+        }
+      }
+    },
+
+    "entry_point": {
+      "type": "string",
+      "description": "Relative path to the primary .chron file within the bundle. Defaults to the first entry in events[] when absent."
+    },
+
+    "events": {
+      "type": "array",
+      "description": "Lightweight index of all .chron files in the package. Every .chron file in the events/ directory MUST have an entry here.",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/event_entry" }
+    },
+
+    "calendars": {
+      "type": "array",
+      "description": "Index of bundled .chroncal files in the calendars/ directory.",
+      "items": { "$ref": "#/$defs/definition_entry" }
+    },
+
+    "universes": {
+      "type": "array",
+      "description": "Index of bundled .chronverse files in the universes/ directory.",
+      "items": { "$ref": "#/$defs/definition_entry" }
+    },
+
+    "assets": {
+      "type": "object",
+      "description": "Asset directory configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "base_path": {
+          "type": "string",
+          "default": "assets/",
+          "description": "Base directory for bundled asset files. Defaults to 'assets/'. All chronpkg:// URLs resolve relative to this directory."
+        },
+        "total_size_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Advisory total size of all bundled assets in bytes."
+        }
+      }
+    }
+
+  },
+
+  "$defs": {
+
+    "event_entry": {
+      "type": "object",
+      "description": "Index entry for a single .chron file in the bundle.",
+      "required": ["path", "id", "title"],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Relative path to the .chron file from the archive root (e.g. 'events/council-of-elrond.chron')."
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "UUID-v4 matching the event.id in the referenced .chron file. Used for deduplication and cross-referencing."
+        },
+        "title": {
+          "type": "string",
+          "description": "Projected from event.content.title. Enables quick scanning without parsing each .chron file."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["event", "era", "marker", "tombstone", "deprecated"],
+          "description": "Optional projection of event.type for quick filtering."
+        },
+        "start_value": {
+          "type": "string",
+          "description": "Optional projection of temporal.start_value for quick sorting."
+        }
+      }
+    },
+
+    "definition_entry": {
+      "type": "object",
+      "description": "Index entry for a bundled .chroncal or .chronverse file.",
+      "required": ["path"],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Relative path to the definition file from the archive root (e.g. 'calendars/shire-reckoning.chroncal')."
+        },
+        "canonical_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "The authoritative hosted URL for this definition. Preserved so parsers can check for updates after unbundling."
+        },
+        "bundled_version": {
+          "type": "string",
+          "description": "Semver string of the definition version included in this bundle."
+        }
+      }
+    }
+
+  }
+}

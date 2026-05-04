@@ -1,0 +1,51 @@
+{
+  "$id": "https://schemas.openchronology.org/index.json",
+  "title": "OpenChronology Schema Registry",
+  "description": "Root index for the OpenChronology JSON Schema registry. Lists all published and pre-release spec versions with their schema base URLs. Implementers and tools may fetch this file to discover available versions and locate schemas for a given spec version.",
+
+  "openchronology": {
+    "project": "OpenChronology",
+    "home": "https://openchronology.org",
+    "github": "https://github.com/knoj/openchronology",
+    "license": "CC-BY-4.0",
+    "registry_base": "https://schemas.openchronology.org/",
+    "contact": "https://openchronology.org/working-group"
+  },
+
+  "latest_stable": null,
+  "latest_prerelease": "0.2",
+
+  "versions": [
+    {
+      "version": "0.2",
+      "status": "pre-release",
+      "published": "2026-05",
+      "base_url": "https://schemas.openchronology.org/v0.2/",
+      "index_url": "https://schemas.openchronology.org/v0.2/index.json",
+      "schemas": {
+        "core":     "https://schemas.openchronology.org/v0.2/core.schema.json",
+        "full":     "https://schemas.openchronology.org/v0.2/full.schema.json",
+        "calendar": "https://schemas.openchronology.org/v0.2/calendar.schema.json",
+        "universe": "https://schemas.openchronology.org/v0.2/universe.schema.json",
+        "manifest": "https://schemas.openchronology.org/v0.2/manifest.schema.json",
+        "stream":   "https://schemas.openchronology.org/v0.2/stream.schema.json"
+      },
+      "notes": "First published schema set. Complete pre-release draft covering all file types in the v0.2 spec. Not yet recommended for production use — breaking changes possible before 1.0."
+    }
+  ],
+
+  "versioning_policy": {
+    "summary": "Same MAJOR version = compatible. Parsers MUST ignore unknown fields (enabling automatic MINOR version compatibility). MAJOR version changes require published migration guides and conversion tools.",
+    "version_format": "MAJOR.MINOR",
+    "folder_format": "v{MAJOR}.{MINOR}",
+    "compatibility": "A parser conformant to vX.Y is compatible with all vX.Z files where Z >= Y, provided unknown fields are ignored per spec §2.3."
+  },
+
+  "mime_types": {
+    ".chron":       "application/vnd.openchronology+json",
+    ".chroncal":    "application/vnd.openchronology.calendar+json",
+    ".chronverse":  "application/vnd.openchronology.universe+json",
+    ".chronpkg":    "application/vnd.openchronology.package+zip",
+    ".chronstream": "application/vnd.openchronology.stream+ndjson"
+  }
+}

@@ -1,0 +1,205 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.openchronology.org/v0.2/calendar.schema.json",
+  "title": "OpenChronology Calendar Definition Schema",
+  "description": "Schema for .chroncal files — standalone, independently hostable calendar system definitions. A .chroncal file describes a single calendar: its epoch, structure (linear or cyclic), and value format. It is referenceable by any number of .chron files.",
+  "x-openchronology-version": "0.2",
+  "x-openchronology-status": "pre-release",
+  "x-openchronology-license": "CC-BY-4.0",
+  "x-openchronology-mime": "application/vnd.openchronology.calendar+json",
+
+  "type": "object",
+  "required": ["meta", "calendar"],
+  "additionalProperties": false,
+
+  "properties": {
+
+    "meta": {
+      "type": "object",
+      "description": "File-level metadata for the calendar definition.",
+      "required": ["id", "version", "display_name"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Stable machine-readable identifier (e.g. 'shire-reckoning', 'galactic-standard'). Used as the key in .chron definitions.calendars."
+        },
+        "version": {
+          "type": "string",
+          "description": "Semver string for this calendar definition (e.g. '1.0.0')."
+        },
+        "display_name": {
+          "type": "string",
+          "description": "Human-readable name of the calendar (e.g. 'Shire Reckoning')."
+        },
+        "author": {
+          "description": "Author(s) of this calendar definition.",
+          "oneOf": [
+            { "type": "string" },
+            { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+          ]
+        },
+        "license": {
+          "type": "string",
+          "description": "License identifier (e.g. 'CC-BY-4.0', 'CC-BY-NC-4.0')."
+        },
+        "canonical_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "The authoritative hosted URL for this .chroncal file. SHOULD be populated for any calendar intended for external reference."
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of the calendar system and its origin."
+        },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Freeform categorization (e.g. ['fictional', 'tolkien', 'lunar'])."
+        },
+        "$schema": {
+          "type": "string",
+          "format": "uri",
+          "description": "JSON Schema URL for validation tooling. Should point to this schema."
+        }
+      }
+    },
+
+    "calendar": {
+      "type": "object",
+      "description": "The calendar definition itself.",
+      "required": ["structure", "value_format"],
+      "additionalProperties": false,
+      "properties": {
+
+        "epoch": {
+          "type": "object",
+          "description": "Anchors this calendar's year zero to a reference universe. Required for calendars that need cross-universe temporal comparison.",
+          "additionalProperties": false,
+          "properties": {
+            "description": {
+              "type": "string",
+              "description": "Human-readable explanation of the epoch (e.g. 'Year 1 SR = Third Age 1601')."
+            },
+            "reference_universe": {
+              "type": "string",
+              "description": "Universe ID (typically 'real') that the reference_value is expressed in."
+            },
+            "reference_value": {
+              "type": "string",
+              "description": "ISO 8601 datetime in the reference universe corresponding to this calendar's epoch."
+            }
+          }
+        },
+
+        "structure": {
+          "description": "Defines whether the calendar is linear (monotonic) or cyclic (month/year based). Exactly one of the structure type branches applies.",
+          "oneOf": [
+            { "$ref": "#/$defs/linear_structure" },
+            { "$ref": "#/$defs/cyclic_structure" }
+          ]
+        },
+
+        "value_format": {
+          "type": "string",
+          "description": "The format string used to parse and produce temporal.*_value strings for this calendar. Common values: 'YYYY-MM-DD', 'YYYY-MMM-DD', 'decimal', 'integer'."
+        }
+      }
+    }
+  },
+
+  "$defs": {
+
+    "linear_structure": {
+      "type": "object",
+      "description": "For monotonic, non-cyclical scales: stardates, project day counters, geologic time.",
+      "required": ["type", "unit_name"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "type": "string", "const": "linear" },
+        "unit_name": {
+          "type": "string",
+          "description": "Name of a single unit in this calendar (e.g. 'stardate', 'day', 'Ma')."
+        },
+        "unit_length_seconds": {
+          "type": "number",
+          "description": "Length of one unit in SI seconds. Required for cross-universe temporal comparison."
+        }
+      }
+    },
+
+    "cyclic_structure": {
+      "type": "object",
+      "description": "For calendars with named months, seasons, or ages. Supports intercalary days and leap rules.",
+      "required": ["type", "months"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "type": "string", "const": "cyclic" },
+        "year_length_days": {
+          "type": "number",
+          "description": "Nominal number of days in a standard (non-leap) year."
+        },
+        "months": {
+          "type": "array",
+          "description": "Ordered array of months. Month names here are the valid values for temporal.*_value strings and recurrence.on.month fields.",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["name", "days"],
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Month name. Must be unique within this calendar."
+              },
+              "days": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Number of days in this month."
+              },
+              "intercalary": {
+                "type": "boolean",
+                "default": false,
+                "description": "True for intercalary (interstitial) periods that fall between named months."
+              }
+            }
+          }
+        },
+        "leap_rule": {
+          "type": "object",
+          "description": "Optional leap year definition.",
+          "additionalProperties": false,
+          "properties": {
+            "description": {
+              "type": "string",
+              "description": "Human-readable explanation of the leap rule."
+            },
+            "frequency_years": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "How many years between leap years."
+            },
+            "extra_days": {
+              "type": "array",
+              "description": "Extra days inserted during leap years.",
+              "items": {
+                "type": "object",
+                "required": ["after_month", "name", "days"],
+                "additionalProperties": false,
+                "properties": {
+                  "after_month": {
+                    "type": "string",
+                    "description": "Name of the month after which the extra days are inserted."
+                  },
+                  "name": { "type": "string" },
+                  "days": { "type": "integer", "minimum": 1 }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+  }
+}

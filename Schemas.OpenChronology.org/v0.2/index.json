@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.openchronology.org/v0.2/index.json",
+  "title": "OpenChronology Schema Registry — v0.2",
+  "description": "Machine-readable index of all JSON Schemas published at this base URL. Implementations may fetch this file to discover available schemas and check for updates.",
+
+  "openchronology": {
+    "spec_version": "0.2",
+    "spec_status": "pre-release",
+    "spec_url": "https://openchronology.org/spec/v0.2",
+    "github": "https://github.com/knoj/openchronology",
+    "license": "CC-BY-4.0",
+    "base_url": "https://schemas.openchronology.org/v0.2/",
+    "published_at": "2026-05"
+  },
+
+  "schemas": [
+    {
+      "id": "core.schema.json",
+      "url": "https://schemas.openchronology.org/v0.2/core.schema.json",
+      "title": "OpenChronology Core Event Schema",
+      "validates": ".chron event files — minimum required structure",
+      "conformance_tier": "Core (Tier 1)",
+      "file_type": ".chron",
+      "mime_type": "application/vnd.openchronology+json",
+      "note": "All conformant .chron files must be valid against this schema. The normative conformance floor reproduced in §9.4 of the specification."
+    },
+    {
+      "id": "full.schema.json",
+      "url": "https://schemas.openchronology.org/v0.2/full.schema.json",
+      "title": "OpenChronology Full Event Schema",
+      "validates": ".chron event files — complete structure including all optional blocks",
+      "conformance_tier": "Full (Tier 3)",
+      "file_type": ".chron",
+      "mime_type": "application/vnd.openchronology+json",
+      "extends": "core.schema.json",
+      "note": "Full tier implementations MUST validate produced files against this schema."
+    },
+    {
+      "id": "calendar.schema.json",
+      "url": "https://schemas.openchronology.org/v0.2/calendar.schema.json",
+      "title": "OpenChronology Calendar Definition Schema",
+      "validates": ".chroncal standalone calendar definition files",
+      "conformance_tier": "All tiers",
+      "file_type": ".chroncal",
+      "mime_type": "application/vnd.openchronology.calendar+json"
+    },
+    {
+      "id": "universe.schema.json",
+      "url": "https://schemas.openchronology.org/v0.2/universe.schema.json",
+      "title": "OpenChronology Universe Definition Schema",
+      "validates": ".chronverse standalone universe definition files",
+      "conformance_tier": "All tiers",
+      "file_type": ".chronverse",
+      "mime_type": "application/vnd.openchronology.universe+json"
+    },
+    {
+      "id": "manifest.schema.json",
+      "url": "https://schemas.openchronology.org/v0.2/manifest.schema.json",
+      "title": "OpenChronology Bundle Manifest Schema",
+      "validates": "manifest.json files inside .chronpkg bundle archives",
+      "conformance_tier": "Full (Tier 3)",
+      "file_type": ".chronpkg (manifest.json)",
+      "mime_type": "application/vnd.openchronology.package+zip",
+      "note": "Validates the manifest.json entry point descriptor, not the ZIP envelope itself."
+    },
+    {
+      "id": "stream.schema.json",
+      "url": "https://schemas.openchronology.org/v0.2/stream.schema.json",
+      "title": "OpenChronology Stream Header Schema",
+      "validates": ".chronstream NDJSON header records (line 1 of every stream file)",
+      "conformance_tier": "Full (Tier 3)",
+      "file_type": ".chronstream",
+      "mime_type": "application/vnd.openchronology.stream+ndjson",
+      "note": "Validates the header record only. Event records in streams use the event structure from core.schema.json."
+    }
+  ],
+
+  "builtin_calendars": [
+    { "id": "gregorian", "standard": "ISO 8601 / Proleptic Gregorian", "value_format": "YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ" },
+    { "id": "julian",    "standard": "Julian Calendar",                 "value_format": "YYYY-MM-DD" },
+    { "id": "islamic",   "standard": "Islamic Hijri (civil)",           "value_format": "YYYY-MM-DD" },
+    { "id": "hebrew",    "standard": "Hebrew Calendar",                 "value_format": "YYYY-MM-DD" },
+    { "id": "chinese",   "standard": "Chinese Lunisolar",               "value_format": "cycle-year-month-day" },
+    { "id": "unix",      "standard": "POSIX Epoch (seconds)",           "value_format": "Integer or decimal string" },
+    { "id": "jdn",       "standard": "Julian Day Number",               "value_format": "Decimal string" }
+  ],
+
+  "builtin_universes": [
+    { "id": "real",     "description": "The real world — SI seconds, absolute time. Always available. Never requires a network fetch." },
+    { "id": "relative", "description": "A generic relative universe. Requires an inline anchor when not using an external .chronverse file." }
+  ],
+
+  "relation_types": [
+    { "type": "parent",          "category": "Hierarchical", "implied_inverse": "child" },
+    { "type": "child",           "category": "Hierarchical", "implied_inverse": "parent" },
+    { "type": "precedes",        "category": "Ordering",     "implied_inverse": "follows" },
+    { "type": "follows",         "category": "Ordering",     "implied_inverse": "precedes" },
+    { "type": "concurrent_with", "category": "Ordering",     "implied_inverse": "self" },
+    { "type": "causes",          "category": "Causal",       "implied_inverse": "caused_by" },
+    { "type": "caused_by",       "category": "Causal",       "implied_inverse": "causes" },
+    { "type": "influences",      "category": "Causal",       "implied_inverse": "influenced_by" },
+    { "type": "influenced_by",   "category": "Causal",       "implied_inverse": "influences" },
+    { "type": "contains",        "category": "Spatial",      "implied_inverse": "contained_by" },
+    { "type": "contained_by",    "category": "Spatial",      "implied_inverse": "contains" },
+    { "type": "contradicts",     "category": "Continuity",   "implied_inverse": "self" },
+    { "type": "retcons",         "category": "Continuity",   "implied_inverse": "retconned_by" },
+    { "type": "retconned_by",    "category": "Continuity",   "implied_inverse": "retcons" },
+    { "type": "variant_of",      "category": "Continuity",   "implied_inverse": "self" },
+    { "type": "references",      "category": "References",   "implied_inverse": "referenced_by" },
+    { "type": "referenced_by",   "category": "References",   "implied_inverse": "references" }
+  ],
+
+  "precision_vocabulary": [
+    "millisecond", "second", "minute", "hour",
+    "day", "month", "year", "decade", "century",
+    "millennium", "epoch", "circa", "custom"
+  ],
+
+  "canon_status_vocabulary": [
+    "canon", "legends", "disputed", "non_canon", "unknown"
+  ]
+}

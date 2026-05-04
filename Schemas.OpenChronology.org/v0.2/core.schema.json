@@ -1,0 +1,697 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.openchronology.org/v0.2/core.schema.json",
+  "title": "OpenChronology Core Event Schema",
+  "description": "Normative conformance floor for .chron files. Covers Tier 1 (Core) requirements. Every conformant .chron file must be valid against this schema. The full.schema.json extends this with all optional blocks.",
+  "x-openchronology-version": "0.2",
+  "x-openchronology-status": "pre-release",
+  "x-openchronology-license": "CC-BY-4.0",
+
+  "type": "object",
+  "required": ["meta", "event"],
+  "additionalProperties": false,
+
+  "properties": {
+
+    "meta": {
+      "type": "object",
+      "description": "File-level metadata. schema_version is the only required field.",
+      "required": ["schema_version"],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "const": "0.2",
+          "description": "Must be '0.2'. Parsers use this to select the correct parsing ruleset."
+        },
+        "author": {
+          "description": "Name(s) of the event's author(s). String or array of strings.",
+          "oneOf": [
+            { "type": "string" },
+            { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+          ]
+        },
+        "license": {
+          "type": "string",
+          "description": "License identifier (e.g. 'CC-BY-4.0')."
+        },
+        "generator": {
+          "type": "string",
+          "description": "Name and version of the software that produced this file."
+        },
+        "canonical_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "The authoritative hosted URL for this .chron file. Enables external linking and deduplication during merges."
+        },
+        "$schema": {
+          "type": "string",
+          "format": "uri",
+          "description": "JSON Schema URL for validation tooling. Conventionally points to this schema or full.schema.json."
+        }
+      }
+    },
+
+    "definitions": {
+      "type": "object",
+      "description": "Declares the universes, calendars, and bodies referenced by this event. MAY be omitted when using only built-in types.",
+      "additionalProperties": false,
+      "properties": {
+
+        "universes": {
+          "type": "object",
+          "description": "Reference map of universe identifiers to their definitions.",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["type"],
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["builtin", "external", "absolute", "relative"],
+                "description": "'builtin' requires no fetch. 'external' requires a ref URL or path."
+              },
+              "ref": {
+                "type": "string",
+                "description": "URL, file:// URI, or relative path to the .chronverse file. Required when type is 'external'."
+              },
+              "ref_version": {
+                "type": "string",
+                "description": "Semver string of the expected .chronverse version."
+              },
+              "base_unit": {
+                "type": "string",
+                "description": "Base time unit for absolute universes (e.g. 'seconds')."
+              },
+              "anchor": {
+                "type": "object",
+                "description": "Anchors a relative universe to a target universe at a known offset.",
+                "required": ["target_universe", "offset_value", "scale_factor"],
+                "additionalProperties": false,
+                "properties": {
+                  "target_universe": { "type": "string" },
+                  "offset_value": { "type": "string" },
+                  "scale_factor": { "type": "number" }
+                }
+              }
+            },
+            "if":   { "properties": { "type": { "const": "external" } }, "required": ["type"] },
+            "then": { "required": ["ref"] }
+          }
+        },
+
+        "calendars": {
+          "type": "object",
+          "description": "Reference map of calendar identifiers to their definitions.",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["type"],
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["builtin", "external"],
+                "description": "'builtin' resolves without a fetch. 'external' requires a ref URL or path."
+              },
+              "ref": {
+                "type": "string",
+                "description": "URL, file:// URI, or relative path to the .chroncal file. Required when type is 'external'."
+              },
+              "ref_version": {
+                "type": "string",
+                "description": "Semver string of the expected .chroncal version."
+              },
+              "canonical_url": {
+                "type": "string",
+                "format": "uri",
+                "description": "Canonical hosted URL of the referenced .chroncal file."
+              },
+              "inline_fallback": {
+                "type": "object",
+                "description": "Local copy of the calendar definition for offline resilience. Same structure as a .chroncal calendar block."
+              }
+            },
+            "if":   { "properties": { "type": { "const": "external" } }, "required": ["type"] },
+            "then": { "required": ["ref"] }
+          }
+        },
+
+        "bodies": {
+          "type": "object",
+          "description": "Reference map of spatial body identifiers (planets, fictional worlds, etc.).",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["name", "type"],
+            "additionalProperties": false,
+            "properties": {
+              "name":      { "type": "string" },
+              "type":      { "type": "string", "description": "E.g. 'planet', 'moon', 'fictional_world'." },
+              "crs":       { "type": "string", "description": "Coordinate reference system identifier." },
+              "image_url": { "type": "string", "format": "uri" },
+              "width":     { "type": "integer", "description": "Map width in pixels." },
+              "height":    { "type": "integer", "description": "Map height in pixels." }
+            }
+          }
+        }
+
+      }
+    },
+
+    "event": { "$ref": "#/$defs/event" }
+  },
+
+  "$defs": {
+
+    "event": {
+      "type": "object",
+      "description": "The event object. type determines role: event (default), era, marker, tombstone, or deprecated.",
+      "required": ["id", "type"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "UUID-v4 uniquely identifying this event across all timelines."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["event", "era", "marker", "tombstone", "deprecated"],
+          "default": "event",
+          "description": "'event', 'era', and 'marker' are functional types. 'tombstone' and 'deprecated' are administrative."
+        },
+        "content":     { "$ref": "#/$defs/content" },
+        "temporal":    { "$ref": "#/$defs/temporal" },
+        "spatial":     { "$ref": "#/$defs/spatial" },
+        "media": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/media_item" }
+        },
+        "custom_data": {
+          "type": "object",
+          "description": "Schemaless bucket for user-defined or application-specific data. RDNN keys recommended."
+        },
+        "relations": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/relation" },
+          "description": "Optional. Absence is semantically equivalent to an empty array."
+        },
+        "significance": { "$ref": "#/$defs/significance" },
+        "recurrence":   { "$ref": "#/$defs/recurrence" },
+        "dynamic":      { "$ref": "#/$defs/dynamic" },
+        "tombstone":    { "$ref": "#/$defs/tombstone_meta" },
+        "deprecated":   { "$ref": "#/$defs/deprecated_meta" }
+      },
+
+      "if":   { "properties": { "type": { "const": "tombstone" } }, "required": ["type"] },
+      "then": {
+        "required": ["tombstone"],
+        "not": {
+          "anyOf": [
+            { "required": ["content"] },
+            { "required": ["temporal"] },
+            { "required": ["spatial"] },
+            { "required": ["relations"] },
+            { "required": ["recurrence"] },
+            { "required": ["significance"] },
+            { "required": ["media"] },
+            { "required": ["custom_data"] },
+            { "required": ["dynamic"] }
+          ]
+        }
+      },
+      "else": {
+        "if":   { "properties": { "type": { "const": "deprecated" } }, "required": ["type"] },
+        "then": { "required": ["deprecated", "content"] },
+        "else": { "required": ["content"] }
+      }
+    },
+
+    "content": {
+      "type": "object",
+      "description": "Core identity and localization block.",
+      "required": ["title"],
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Human-readable name of the event. Required for all non-tombstone events."
+        },
+        "description": {
+          "type": "string",
+          "description": "Full description. Format is controlled by description_format."
+        },
+        "description_format": {
+          "type": "string",
+          "enum": ["plain", "markdown", "html"],
+          "default": "plain",
+          "description": "'html' is only permitted in Full tier implementations."
+        },
+        "date_label": {
+          "type": "string",
+          "description": "Human-readable display date string. Highest priority in display date resolution."
+        },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Freeform categorization tags."
+        },
+        "translations": {
+          "type": "object",
+          "description": "Locale-keyed translation overrides (BCP 47 locale codes as keys).",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "title":       { "type": "string" },
+              "description": { "type": "string" },
+              "date_label":  { "type": "string" },
+              "description_format": {
+                "type": "string",
+                "enum": ["plain", "markdown", "html"]
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "temporal": {
+      "type": "object",
+      "description": "Computational engine for date resolution. All display concerns belong in content.date_label or format_hint.",
+      "additionalProperties": false,
+      "properties": {
+        "universe": {
+          "type": "string",
+          "description": "Key referencing a universe in definitions.universes or a built-in universe ID."
+        },
+        "calendar": {
+          "type": "string",
+          "description": "Key referencing a calendar in definitions.calendars or a built-in calendar ID."
+        },
+        "start_value": {
+          "type": "string",
+          "description": "Calendar-native date string for the start of this event. Format is calendar-dependent."
+        },
+        "end_value": {
+          "type": "string",
+          "description": "Calendar-native date string for the end of this event. Omit for point-in-time events."
+        },
+        "precision": {
+          "type": "string",
+          "enum": [
+            "millisecond", "second", "minute", "hour",
+            "day", "month", "year", "decade", "century",
+            "millennium", "epoch", "circa", "custom"
+          ],
+          "description": "Confidence in the temporal value. 'circa' should always pair with an uncertainty block."
+        },
+        "format_hint": {
+          "type": "object",
+          "description": "Controls auto-formatting when content.date_label is absent.",
+          "additionalProperties": false,
+          "properties": {
+            "pattern": {
+              "type": "string",
+              "description": "Unicode CLDR-style date pattern (e.g. 'MMMM D, YYYY'). Governs structure; locale governs language."
+            },
+            "era_label": {
+              "type": ["string", "null"],
+              "description": "String appended after the formatted date (e.g. 'SR', 'BBY'). Null to suppress."
+            }
+          }
+        },
+        "uncertainty": {
+          "type": "object",
+          "description": "Expresses the uncertainty window around the temporal value.",
+          "required": ["type", "margin_value", "margin_unit"],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["range", "before", "after", "no_earlier_than", "no_later_than"]
+            },
+            "margin_value": {
+              "type": "number",
+              "description": "Size of the uncertainty window."
+            },
+            "margin_unit": {
+              "type": "string",
+              "description": "A valid precision unit (same vocabulary as temporal.precision)."
+            },
+            "confidence": {
+              "type": ["number", "null"],
+              "minimum": 0,
+              "maximum": 1,
+              "description": "0.0–1.0 probability the true date falls within the expressed range. Null if unspecified."
+            }
+          }
+        }
+      }
+    },
+
+    "spatial": {
+      "type": "object",
+      "description": "Geographic or spatial context. Coordinates follow GeoJSON order: [longitude, latitude, altitude].",
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "type": "string",
+          "description": "Key referencing a body in definitions.bodies (e.g. 'earth', 'mars')."
+        },
+        "crs": {
+          "type": "string",
+          "description": "Coordinate reference system (e.g. 'wgs84')."
+        },
+        "region_codes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "ISO 3166-2 or similar region codes."
+        },
+        "custom_region": {
+          "type": "string",
+          "description": "Freeform region name for fictional or non-standard geographies."
+        },
+        "geometry": {
+          "type": "object",
+          "required": ["type", "coordinates"],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["Point", "Polygon", "LineString"]
+            },
+            "coordinates": {
+              "type": "array",
+              "description": "GeoJSON order: [longitude, latitude, altitude]."
+            },
+            "radius_meters": {
+              "type": "number",
+              "description": "Approximate radius for imprecise or area-based locations."
+            },
+            "label": {
+              "type": "string",
+              "description": "Human-readable location name for display."
+            }
+          }
+        }
+      }
+    },
+
+    "media_item": {
+      "type": "object",
+      "required": ["type", "url"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["video", "audio", "image", "document"]
+        },
+        "url": {
+          "type": "string",
+          "description": "URL, file:// URI, relative path, or chronpkg:// scheme reference."
+        },
+        "alt": {
+          "type": "string",
+          "description": "Required for accessibility-compliant renderers."
+        },
+        "caption": { "type": "string" },
+        "credit":  { "type": "string" },
+        "sync": {
+          "type": "object",
+          "description": "Synchronization anchor for media playback relative to a temporal value.",
+          "additionalProperties": false,
+          "properties": {
+            "anchor_value": { "type": "string" },
+            "offset_seconds": { "type": "number" }
+          }
+        }
+      }
+    },
+
+    "relation": {
+      "type": "object",
+      "description": "Weak reference to another event. Parsers MUST soft-fail if target_id is not present in the current dataset.",
+      "required": ["type", "target_id"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "parent", "child",
+            "precedes", "follows", "concurrent_with",
+            "causes", "caused_by",
+            "influences", "influenced_by",
+            "contains", "contained_by",
+            "contradicts",
+            "retcons", "retconned_by",
+            "variant_of",
+            "references", "referenced_by"
+          ]
+        },
+        "target_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "UUID-v4 of the target event."
+        },
+        "target_url": {
+          "type": "string",
+          "description": "canonical_url of the target .chron file. Parsers MAY fetch but MUST NOT require reachability."
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional human-readable context for the relationship."
+        },
+        "bidirectional": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, the inverse relation is implied without a separate relation object."
+        },
+        "confidence": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Confidence that this relationship is accurate. 1.0 = certain."
+        },
+        "canon": {
+          "description": "Canon status of this relationship. Accepts a single object or an array for multi-scope events.",
+          "oneOf": [
+            { "$ref": "#/$defs/canon_object" },
+            { "type": "array", "items": { "$ref": "#/$defs/canon_object" }, "minItems": 1 }
+          ]
+        }
+      }
+    },
+
+    "canon_object": {
+      "type": "object",
+      "required": ["scope", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "scope": {
+          "type": "string",
+          "description": "Universe-defined scope identifier (e.g. 'canon', 'legends', a universe ID)."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["canon", "legends", "disputed", "non_canon", "unknown"]
+        }
+      }
+    },
+
+    "significance": {
+      "type": "object",
+      "description": "Drives Level of Detail (LOD) rendering. Events without this block are always visible at all zoom levels.",
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000,
+          "description": "Overall significance score (0–1000). Used to prioritize rendering in crowded viewports."
+        },
+        "temporal_scope": {
+          "type": "string",
+          "enum": ["epochal", "millennial", "centennial", "generational", "decadal", "annual", "seasonal", "monthly", "weekly", "daily", "hourly"],
+          "description": "The temporal zoom level at which this event is most relevant."
+        },
+        "geographic_scope": {
+          "type": "string",
+          "enum": ["global", "continental", "national", "regional", "local", "street"],
+          "description": "The geographic zoom level at which this event is most relevant."
+        },
+        "metrics": {
+          "type": "array",
+          "description": "Per-domain significance scores.",
+          "items": {
+            "type": "object",
+            "required": ["type", "value"],
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["political", "military", "economic", "cultural", "scientific", "environmental", "personal", "narrative", "custom"]
+              },
+              "value": { "type": "number", "minimum": 0, "maximum": 1000 },
+              "description": { "type": "string", "description": "Required when type is 'custom'." }
+            }
+          }
+        },
+        "visibility": {
+          "type": "object",
+          "description": "Hard zoom thresholds that override significance.value.",
+          "additionalProperties": false,
+          "properties": {
+            "min_temporal_zoom":   { "type": "string" },
+            "max_temporal_zoom":   { "type": "string" },
+            "min_geographic_zoom": { "type": "string" },
+            "max_geographic_zoom": { "type": "string" }
+          }
+        }
+      }
+    },
+
+    "recurrence": {
+      "type": "object",
+      "description": "Defines a repeating pattern for this event. Absence means the event occurs exactly once.",
+      "required": ["enabled", "frequency"],
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "frequency": {
+          "type": "object",
+          "required": ["unit", "interval"],
+          "additionalProperties": false,
+          "properties": {
+            "unit": {
+              "type": "string",
+              "enum": ["day", "week", "month", "year", "custom"],
+              "description": "Unit meaning is delegated to the event's declared calendar."
+            },
+            "interval": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "on": {
+          "type": "object",
+          "description": "Day/month anchor for the recurrence within a cycle.",
+          "additionalProperties": false,
+          "properties": {
+            "month": { "type": "string", "description": "Month name as defined in the calendar's months array." },
+            "day":   { "type": "integer", "minimum": 1 }
+          }
+        },
+        "end": {
+          "type": "object",
+          "required": ["type"],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["count", "until", "none"],
+              "description": "'none' means perpetual — renderers MUST NOT eagerly expand."
+            },
+            "count": { "type": "integer", "minimum": 1, "description": "Total occurrences including the first. Required when type is 'count'." },
+            "until": { "type": "string", "description": "Calendar-native date string. Required when type is 'until'." }
+          }
+        },
+        "exceptions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["instance_value", "type"],
+            "additionalProperties": false,
+            "properties": {
+              "instance_value": { "type": "string", "description": "Calendar-native date string identifying this specific instance." },
+              "type": { "type": "string", "enum": ["cancelled", "modified"] },
+              "overrides": { "type": "object", "description": "Partial event overrides applied to a modified instance." }
+            }
+          }
+        }
+      }
+    },
+
+    "dynamic": {
+      "type": "object",
+      "description": "Formula-driven field computation. Full tier only for eval. MUST NOT use eval(), exec(), or equivalent.",
+      "required": ["enabled"],
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "formulas": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["target_field", "type", "expression"],
+            "additionalProperties": false,
+            "properties": {
+              "target_field": {
+                "type": "string",
+                "description": "Dot-path to the field being computed. MUST NOT target: id, type, relations, recurrence, tombstone."
+              },
+              "type": {
+                "type": "string",
+                "enum": ["interpolation", "formula"]
+              },
+              "expression": { "type": "string" },
+              "dataset": {
+                "type": "array",
+                "description": "Inline dataset for interpolation formulas."
+              },
+              "dataset_ref": {
+                "type": "object",
+                "required": ["type"],
+                "additionalProperties": false,
+                "properties": {
+                  "type":   { "type": "string", "enum": ["url", "file"] },
+                  "url":    { "type": "string", "format": "uri", "description": "Required when type is 'url'." },
+                  "path":   { "type": "string", "description": "Required when type is 'file'." },
+                  "format": { "type": "string", "const": "openchronology_dataset" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "tombstone_meta": {
+      "type": "object",
+      "description": "Metadata for tombstone events. Records the deletion of a previously existing event.",
+      "required": ["original_type", "reason"],
+      "additionalProperties": false,
+      "properties": {
+        "original_type": {
+          "type": "string",
+          "enum": ["event", "era", "marker"],
+          "description": "The functional type of the event before deletion."
+        },
+        "reason":        { "type": "string" },
+        "deleted_by":    { "type": "string" },
+        "deleted_at":    { "type": "string", "format": "date-time" },
+        "superseded_by": { "type": "string", "format": "uuid", "description": "UUID of the replacement event, if any." }
+      }
+    },
+
+    "deprecated_meta": {
+      "type": "object",
+      "description": "Metadata for deprecated events. Event retains all data but signals it should be treated with caution.",
+      "required": ["original_type", "reason"],
+      "additionalProperties": false,
+      "properties": {
+        "original_type": {
+          "type": "string",
+          "enum": ["event", "era", "marker"]
+        },
+        "reason":        { "type": "string" },
+        "deprecated_by": { "type": "string" },
+        "deprecated_at": { "type": "string", "format": "date-time" },
+        "superseded_by": { "type": "string", "format": "uuid" },
+        "display": {
+          "type": "string",
+          "enum": ["visible", "distinguished", "hidden"],
+          "default": "distinguished",
+          "description": "'distinguished' = dimmed or struck-through (default). 'hidden' = opt-in to show."
+        }
+      }
+    }
+
+  }
+}
