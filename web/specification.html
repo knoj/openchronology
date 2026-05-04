@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenChronology Specification v0.2</title>
+  <meta name="description" content="The OpenChronology Specification v0.2 — a platform-agnostic open standard for storing, sharing, and visualizing chronological data.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Spectral:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    a { color: var(--gold); text-decoration: none; }
+    a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+    /* ── Header ───────────────────────────────────────────────── */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      background: rgba(8,11,18,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-sub);
+      padding: 1rem 0;
+    }
+    .header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header-logo {
+      font-family: var(--ff-display);
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: var(--text);
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .logo-mark {
+      width: 28px; height: 28px;
+      border: 1.5px solid var(--gold);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .logo-mark::before {
+      content: '';
+      width: 8px; height: 8px;
+      background: var(--gold);
+      border-radius: 50%;
+    }
+    .logo-mark::after {
+      content: '';
+      position: absolute;
+      width: 18px; height: 1px;
+      background: var(--gold);
+      opacity: 0.5;
+    }
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .header-badge {
+      font-family: var(--ff-mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      color: var(--gold-dim);
+      border: 1px solid var(--gold-dim);
+      padding: 0.2em 0.6em;
+      border-radius: 2px;
+    }
+    .header-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+    .header-links a {
+      font-family: var(--ff-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      transition: color 0.2s;
+    }
+    .header-links a:hover { color: var(--gold); text-decoration: none; }
+
+    /* ── Layout ───────────────────────────────────────────────── */
+    .page-layout {
+      display: flex;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding-top: 64px;
+    }
+
+    /* ── Sidebar ──────────────────────────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      position: sticky;
+      top: 64px;
+      height: calc(100vh - 64px);
+      overflow-y: auto;
+      padding: 2.5rem 0 2rem 2rem;
+      border-right: 1px solid var(--border-sub);
+      scrollbar-width: thin;
+      scrollbar-color: var(--text-faint) transparent;
+    }
+    .sidebar::-webkit-scrollbar { width: 3px; }
+    .sidebar::-webkit-scrollbar-thumb { background: var(--text-faint); border-radius: 2px; }
+
+    .toc-header {
+      font-family: var(--ff-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 1.2rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--border-sub);
+    }
+    .toc-list { list-style: none; }
+    .toc-list li { margin-bottom: 0.1rem; }
+    .toc-list a {
+      font-family: var(--ff-mono);
+      font-size: 0.68rem;
+      color: var(--text-faint);
+      display: block;
+      padding: 0.3rem 0.5rem 0.3rem 0;
+      border-left: 2px solid transparent;
+      transition: color 0.2s, border-color 0.2s, padding 0.2s;
+      line-height: 1.4;
+    }
+    .toc-list a:hover { color: var(--text-dim); text-decoration: none; }
+    .toc-list a.active {
+      color: var(--gold);
+      border-left-color: var(--gold);
+      padding-left: 0.6rem;
+    }
+    .toc-list .toc-sub a {
+      font-size: 0.62rem;
+      padding-left: 0.8rem;
+      color: var(--text-faint);
+    }
+    .toc-list .toc-sub a.active {
+      color: var(--gold-dim);
+      border-left-color: var(--gold-dim);
+      padding-left: 1.4rem;
+    }
+    .toc-divider {
+      height: 1px;
+      background: var(--border-sub);
+      margin: 0.8rem 0.5rem 0.8rem 0;
+    }
+    .toc-download {
+      margin-top: 1.5rem;
+      padding-top: 1.2rem;
+      border-top: 1px solid var(--border-sub);
+    }
+    .toc-download a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--ff-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      color: var(--teal);
+      padding: 0.6rem 0.5rem;
+      border: 1px solid rgba(74,159,168,0.2);
+      border-radius: 2px;
+      transition: background 0.2s;
+    }
+    .toc-download a:hover { background: var(--teal-dim); text-decoration: none; }
+
+    /* ── Main content ─────────────────────────────────────────── */
+    .spec-content {
+      flex: 1;
+      min-width: 0;
+      padding: 3rem 3.5rem 6rem 3.5rem;
+      max-width: 860px;
+    }
+
+    /* ── Spec header ──────────────────────────────────────────── */
+    .spec-title-block {
+      padding-bottom: 3rem;
+      margin-bottom: 3rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .spec-eyebrow {
+      font-family: var(--ff-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .spec-eyebrow::before { content: ''; width: 20px; height: 1px; background: var(--gold-dim); }
+    .spec-title {
+      font-family: var(--ff-display);
+      font-size: 3rem;
+      font-weight: 300;
+      color: #f0ece3;
+      line-height: 1.1;
+      margin-bottom: 0.5rem;
+    }
+    .spec-subtitle {
+      font-family: var(--ff-display);
+      font-style: italic;
+      font-size: 1.2rem;
+      color: var(--text-dim);
+      margin-bottom: 2rem;
+    }
+    .spec-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border-sub);
+      border: 1px solid var(--border-sub);
+      margin-top: 2rem;
+    }
+    .spec-meta-item {
+      background: var(--bg-surface);
+      padding: 0.9rem 1.1rem;
+    }
+    .spec-meta-label {
+      font-family: var(--ff-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 0.2rem;
+    }
+    .spec-meta-value {
+      font-family: var(--ff-mono);
+      font-size: 0.8rem;
+      color: var(--teal);
+    }
+
+    /* ── Section headings ─────────────────────────────────────── */
+    .spec-section {
+      margin-bottom: 4rem;
+      scroll-margin-top: 80px;
+    }
+    .sec-label {
+      font-family: var(--ff-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .sec-label::before { content: ''; width: 16px; height: 1px; background: var(--gold-dim); }
+    h2.sec-title {
+      font-family: var(--ff-display);
+      font-size: 2rem;
+      font-weight: 400;
+      color: #f0ece3;
+      line-height: 1.2;
+      margin-bottom: 1.2rem;
+      scroll-margin-top: 80px;
+    }
+    h3.sec-sub {
+      font-family: var(--ff-display);
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: #e0dbd0;
+      margin: 2rem 0 0.8rem;
+      scroll-margin-top: 80px;
+    }
+    h4.sec-subsub {
+      font-family: var(--ff-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin: 1.5rem 0 0.6rem;
+    }
+    .sec-divider {
+      height: 1px;
+      background: var(--border-sub);
+      margin: 3.5rem 0;
+    }
+
+    /* ── Body text ────────────────────────────────────────────── */
+    p {
+      font-weight: 300;
+      color: var(--text-dim);
+      margin-bottom: 1rem;
+    }
+    p strong { font-weight: 500; color: var(--text); }
+    p em { font-style: italic; color: var(--text); }
+
+    ul, ol {
+      padding-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    li {
+      font-weight: 300;
+      color: var(--text-dim);
+      margin-bottom: 0.3rem;
+    }
+    li strong { color: var(--text); font-weight: 500; }
+
+    code {
+      font-family: var(--ff-mono);
+      font-size: 0.8em;
+      color: var(--teal);
+      background: var(--teal-dim);
+      padding: 0.1em 0.4em;
+      border-radius: 3px;
+    }
+
+    /* ── Code blocks ──────────────────────────────────────────── */
+    pre {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-sub);
+      border-left: 2px solid var(--gold-dim);
+      padding: 1.4rem 1.6rem;
+      overflow-x: auto;
+      margin: 1.2rem 0 1.5rem;
+      border-radius: 0 2px 2px 0;
+    }
+    pre code {
+      font-family: var(--ff-mono);
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      background: none;
+      padding: 0;
+      line-height: 1.6;
+    }
+
+    /* ── Tables ───────────────────────────────────────────────── */
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.2rem 0 1.5rem;
+      font-size: 0.875rem;
+    }
+    .spec-table thead tr { border-bottom: 1px solid var(--border); }
+    .spec-table th {
+      font-family: var(--ff-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      text-align: left;
+      padding: 0.6rem 0.9rem;
+      font-weight: 400;
+    }
+    .spec-table td {
+      padding: 0.75rem 0.9rem;
+      border-bottom: 1px solid var(--border-sub);
+      color: var(--text-dim);
+      vertical-align: top;
+      font-weight: 300;
+    }
+    .spec-table tr:last-child td { border-bottom: none; }
+    .spec-table tr:hover td { background: var(--gold-glow); }
+    .spec-table td strong { color: var(--text); font-weight: 400; }
+    .spec-table td code { font-size: 0.75em; }
+
+    /* ── Callouts ─────────────────────────────────────────────── */
+    .callout {
+      padding: 1rem 1.2rem;
+      margin: 1.2rem 0;
+      border-radius: 0 2px 2px 0;
+      font-size: 0.9rem;
+      font-weight: 300;
+    }
+    .callout-note {
+      background: rgba(200,164,90,0.07);
+      border-left: 2px solid var(--gold-dim);
+      color: var(--text-dim);
+    }
+    .callout-warn {
+      background: rgba(74,159,168,0.07);
+      border-left: 2px solid var(--teal);
+      color: var(--text-dim);
+    }
+    .callout-label {
+      font-family: var(--ff-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+    }
+    .callout-note .callout-label { color: var(--gold-dim); }
+    .callout-warn .callout-label { color: var(--teal); }
+    .callout strong { font-weight: 500; color: var(--text); }
+
+    /* ── Tier blocks ──────────────────────────────────────────── */
+    .tier-block {
+      border: 1px solid var(--border-sub);
+      margin: 1.5rem 0;
+    }
+    .tier-header {
+      padding: 0.8rem 1.2rem;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-sub);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .tier-name {
+      font-family: var(--ff-display);
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #f0ece3;
+    }
+    .tier-badge {
+      font-family: var(--ff-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.2em 0.5em;
+      border-radius: 2px;
+    }
+    .tier-1 .tier-badge { color: var(--text-faint); border: 1px solid var(--text-faint); }
+    .tier-2 .tier-badge { color: var(--gold-dim);   border: 1px solid var(--gold-dim); }
+    .tier-3 .tier-badge { color: var(--gold);       border: 1px solid var(--gold); }
+    .tier-body { padding: 1rem 1.2rem; }
+    .tier-body p { font-size: 0.875rem; margin-bottom: 0.8rem; }
+    .tier-body ul { font-size: 0.875rem; }
+
+    /* ── Schema cards ─────────────────────────────────────────── */
+    .schema-row {
+      display: flex;
+      gap: 1px;
+      flex-direction: column;
+      background: var(--border-sub);
+      margin: 1.2rem 0;
+    }
+    .schema-item {
+      background: var(--bg);
+      padding: 1rem 1.2rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1.5rem;
+      transition: background 0.2s;
+    }
+    .schema-item:hover { background: var(--bg-card); }
+    .schema-file {
+      font-family: var(--ff-mono);
+      font-size: 0.72rem;
+      color: var(--teal);
+      white-space: nowrap;
+      min-width: 200px;
+      padding-top: 0.1rem;
+    }
+    .schema-desc { font-size: 0.875rem; color: var(--text-dim); font-weight: 300; }
+
+    /* ── Footer ───────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border-sub);
+      padding: 2.5rem 3.5rem 2.5rem calc(var(--sidebar-w) + 3.5rem);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .footer-logo { font-family: var(--ff-display); font-size: 1rem; color: var(--text-dim); }
+    .footer-links { display: flex; gap: 1.5rem; list-style: none; }
+    .footer-links a {
+      font-family: var(--ff-mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--gold); text-decoration: none; }
+    .footer-meta { font-family: var(--ff-mono); font-size: 0.6rem; color: var(--text-faint); }
+
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .spec-content { padding: 2rem 1.5rem 4rem; }
+      footer { padding: 2rem 1.5rem; }
+      .spec-meta-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <a href="index.html" class="header-logo" style="text-decoration:none;">
+        <div class="logo-mark"></div>
+        OpenChronology
+      </a>
+      <div class="header-meta">
+        <ul class="header-links">
+          <li><a href="#s1">Introduction</a></li>
+          <li><a href="#s6">Event Object</a></li>
+          <li><a href="#s9">Conformance</a></li>
+          <li><a href="https://github.com/knoj/openchronology">GitHub</a></li>
+        </ul>
+        <span class="header-badge">v0.2 Pre-Release</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-layout">
+
+    <!-- ── Sidebar TOC ────────────────────────────────────────── -->
+    <nav class="sidebar" aria-label="Table of contents">
+      <div class="toc-header">Contents</div>
+      <ul class="toc-list" id="toc">
+        <li><a href="#intro" class="active">Introduction</a></li>
+        <ul class="toc-sub">
+          <li><a href="#s1-1">Document-Per-Event Model</a></li>
+          <li><a href="#s1-2">File Family</a></li>
+          <li><a href="#s1-3">Founding Motivation</a></li>
+        </ul>
+        <div class="toc-divider"></div>
+        <li><a href="#s2">File Format</a></li>
+        <ul class="toc-sub">
+          <li><a href="#s2-1">Reference Resolution</a></li>
+          <li><a href="#s2-2">Date Value Formatting</a></li>
+          <li><a href="#s2-3">Schema Version Compatibility</a></li>
+        </ul>
+        <div class="toc-divider"></div>
+        <li><a href="#s3">The .chron Event File</a></li>
+        <ul class="toc-sub">
+          <li><a href="#s3-1">The meta Block</a></li>
+          <li><a href="#s3-2">The definitions Block</a></li>
+        </ul>
+        <div class="toc-divider"></div>
+        <li><a href="#s4">The .chroncal File</a></li>
+        <li><a href="#s5">The .chronverse File</a></li>
+        <div class="toc-divider"></div>
+        <li><a href="#s6">The Event Object</a></li>
+        <ul class="toc-sub">
+          <li><a href="#s6-1">Content &amp; Localization</a></li>
+          <li><a href="#s6-3">Temporal Data</a></li>
+          <li><a href="#s6-4">Spatial Data</a></li>
+          <li><a href="#s6-5">Media</a></li>
+          <li><a href="#s6-7">Relations</a></li>
+          <li><a href="#s6-8">Significance</a></li>
+          <li><a href="#s6-9">Recurrence</a></li>
+          <li><a href="#s6-10">Tombstone Events</a></li>
+          <li><a href="#s6-11">Deprecated Events</a></li>
+        </ul>
+        <div class="toc-divider"></div>
+        <li><a href="#s7">Implementation Guidelines</a></li>
+        <li><a href="#s8">Transport &amp; Storage</a></li>
+        <ul class="toc-sub">
+          <li><a href="#s8-1">Bundle Package (.chronpkg)</a></li>
+          <li><a href="#s8-2">Streaming Feed (.chronstream)</a></li>
+        </ul>
+        <div class="toc-divider"></div>
+        <li><a href="#s9">Conformance</a></li>
+        <ul class="toc-sub">
+          <li><a href="#s9-1">RFC 2119 Key Words</a></li>
+          <li><a href="#s9-2">Conformance Tiers</a></li>
+          <li><a href="#s9-3">Schema Registry</a></li>
+        </ul>
+        <div class="toc-divider"></div>
+        <li><a href="#sa">Appendix A: SQL Schema</a></li>
+        <li><a href="#sb">Appendix B: Changelog</a></li>
+      </ul>
+
+      <div class="toc-download">
+        <a href="https://github.com/knoj/openchronology">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 1a7 7 0 00-2.21 13.64c.35.06.48-.15.48-.34v-1.2c-1.94.42-2.35-.94-2.35-.94-.32-.81-.78-1.02-.78-1.02-.64-.43.05-.43.05-.43.7.05 1.07.72 1.07.72.62 1.07 1.63.76 2.03.58.06-.45.24-.76.44-.94-1.55-.18-3.18-.78-3.18-3.46 0-.76.27-1.38.72-1.87-.07-.18-.31-.88.07-1.84 0 0 .59-.19 1.93.72A6.72 6.72 0 018 4.72c.6 0 1.2.08 1.76.23 1.34-.9 1.93-.72 1.93-.72.38.96.14 1.66.07 1.84.45.49.72 1.11.72 1.87 0 2.69-1.64 3.28-3.2 3.45.25.22.48.65.48 1.31v1.94c0 .19.13.41.49.34A7 7 0 008 1z"/>
+          </svg>
+          GitHub Repository
+        </a>
+      </div>
+    </nav>
+
+    <!-- ── Spec Content ───────────────────────────────────────── -->
+    <main class="spec-content">
+
+      <!-- Title block -->
+      <div class="spec-title-block" id="intro">
+        <div class="spec-eyebrow">OpenChronology Specification</div>
+        <h1 class="spec-title">Version 0.2</h1>
+        <p class="spec-subtitle">Pre-Release Draft — May 2026</p>
+        <div class="spec-meta-grid">
+          <div class="spec-meta-item">
+            <div class="spec-meta-label">Status</div>
+            <div class="spec-meta-value">Pre-Release Draft</div>
+          </div>
+          <div class="spec-meta-item">
+            <div class="spec-meta-label">License</div>
+            <div class="spec-meta-value">CC-BY-4.0</div>
+          </div>
+          <div class="spec-meta-item">
+            <div class="spec-meta-label">Schema Base URL</div>
+            <div class="spec-meta-value" style="font-size:0.68rem;">schemas.openchronology.org/v0.2/</div>
+          </div>
+          <div class="spec-meta-item">
+            <div class="spec-meta-label">Previous Version</div>
+            <div class="spec-meta-value">0.1 — Feb 2026</div>
+          </div>
+          <div class="spec-meta-item">
+            <div class="spec-meta-label">Maintainers</div>
+            <div class="spec-meta-value">OpenChronology Working Group</div>
+          </div>
+          <div class="spec-meta-item">
+            <div class="spec-meta-label">Last Updated</div>
+            <div class="spec-meta-value">May 4, 2026</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- §1 Introduction -->
+      <section class="spec-section" id="s1">
+        <div class="sec-label">§1</div>
+        <h2 class="sec-title">Introduction</h2>
+        <p>OpenChronology is a platform-agnostic standard for storing, sharing, and visualizing chronological data. Unlike legacy timeline formats which focus solely on dates (ISO 8601), OpenChronology treats time as a flexible variable, allowing for the representation of:</p>
+        <ul>
+          <li><strong>Absolute History</strong> — Strictly dated events (Gregorian, Julian).</li>
+          <li><strong>Relative Time</strong> — Project management (Day 1, Day 5) or video timestamps.</li>
+          <li><strong>Fictional Universes</strong> — Custom calendars (Stardates, Fantasy Epochs).</li>
+          <li><strong>Deep Time</strong> — Geologic and cosmic scales.</li>
+        </ul>
+        <p><strong>Universal Portability</strong> is the primary goal: an event created in a project management app should be renderable in a historical visualization app without data loss.</p>
+
+        <h3 class="sec-sub" id="s1-1">1.1 The Document-Per-Event Model</h3>
+        <p>OpenChronology follows a document-per-event architecture. Each event is a standalone, self-contained file — independently citable, linkable, and portable. This is analogous to how the web works: every Wikipedia article is its own URL. Every <code>.chron</code> file is its own citable artifact.</p>
+        <p>This architecture enables a distributed timeline ecosystem with no central database required. Events live wherever their authors host them, linked by UUID and canonical URL, assembled into timelines by bundle packages or streaming feeds.</p>
+        <p>A key intended use case is supporting authors, game designers, screenwriters, and world-builders in developing fictional universes — working entirely on a local machine during development, then publishing to the web when ready. All reference types (calendar, universe, asset) support local file paths, absolute file URIs, and remote URLs equally.</p>
+
+        <h3 class="sec-sub" id="s1-2">1.2 File Family Overview</h3>
+        <table class="spec-table">
+          <thead><tr><th>Format Name</th><th>Extension</th><th>Contains</th><th>Analogous to</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Event File</strong></td><td><code>.chron</code></td><td>A single event, era, or marker</td><td>A Wikipedia article</td></tr>
+            <tr><td><strong>Calendar Definition</strong></td><td><code>.chroncal</code></td><td>A single reusable calendar definition</td><td>A shared stylesheet</td></tr>
+            <tr><td><strong>Universe Definition</strong></td><td><code>.chronverse</code></td><td>A single universe definition with canon scopes</td><td>A world-building bible entry</td></tr>
+            <tr><td><strong>Bundle Package</strong></td><td><code>.chronpkg</code></td><td>A collection of .chron files plus assets</td><td>A book or anthology</td></tr>
+            <tr><td><strong>Streaming Feed</strong></td><td><code>.chronstream</code></td><td>A lightweight NDJSON event feed</td><td>An RSS feed</td></tr>
+          </tbody>
+        </table>
+
+        <h3 class="sec-sub" id="s1-3">1.3 Founding Motivation</h3>
+        <p>OpenChronology was born from the <strong>1000 Year Project</strong> (<a href="https://1000yearproject.org">1000yearproject.org</a>) — an initiative to document the complete life of a redwood tree from the moment it sprouts to the day it falls, capturing daily photography, environmental sensor data, and eventually full lidar and photogrammetry scans across a millennium.</p>
+        <p>A redwood alive today may have sprouted before the Magna Carta was signed. Tracking it meaningfully requires a standard that can hold a daily humidity reading and a century of world history with equal precision.</p>
+        <p>But the same standard that serves a thousand-year tree serves the video game developer building a fictional universe from scratch, the screenwriter mapping a character's journey across decades, the family historian connecting generations across a century, and the project manager tracking a six-week product launch.</p>
+      </section>
+
+      <div class="sec-divider"></div>
+
+      <!-- §2 File Format -->
+      <section class="spec-section" id="s2">
+        <div class="sec-label">§2</div>
+        <h2 class="sec-title">File Format</h2>
+        <table class="spec-table">
+          <thead><tr><th>Extension</th><th>MIME Type</th><th>Encoding</th></tr></thead>
+          <tbody>
+            <tr><td><code>.chron</code></td><td><code>application/vnd.openchronology+json</code></td><td>UTF-8</td></tr>
+            <tr><td><code>.chroncal</code></td><td><code>application/vnd.openchronology.calendar+json</code></td><td>UTF-8</td></tr>
+            <tr><td><code>.chronverse</code></td><td><code>application/vnd.openchronology.universe+json</code></td><td>UTF-8</td></tr>
+            <tr><td><code>.chronpkg</code></td><td><code>application/vnd.openchronology.package+zip</code></td><td>UTF-8 (manifest and JSON contents)</td></tr>
+            <tr><td><code>.chronstream</code></td><td><code>application/vnd.openchronology.stream+ndjson</code></td><td>UTF-8</td></tr>
+          </tbody>
+        </table>
+
+        <h3 class="sec-sub" id="s2-1">2.1 Reference Resolution</h3>
+        <p>All file references support three addressing modes:</p>
+        <table class="spec-table">
+          <thead><tr><th>Mode</th><th>Format</th><th>Use Case</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Relative path</strong></td><td><code>./calendars/shire.chroncal</code></td><td>Local development, bundled packages</td></tr>
+            <tr><td><strong>Absolute local</strong></td><td><code>file:///Users/...</code></td><td>Cross-directory local references</td></tr>
+            <tr><td><strong>Remote URL</strong></td><td><code>https://calendars.tolkienestate.com/...</code></td><td>Published authoritative definitions</td></tr>
+          </tbody>
+        </table>
+        <div class="callout callout-note"><div class="callout-label">Note</div>All three modes are first-class. Local file support is an intentional design requirement — authors working on unpublished fictional universes should be able to use OpenChronology entirely offline.</div>
+
+        <h3 class="sec-sub" id="s2-2">2.2 Date Value Formatting</h3>
+        <p>OpenChronology uses ISO 8601 for all computational date values: <code>YYYY-MM-DD</code> for dates, <code>YYYY-MM-DDTHH:MM:SSZ</code> for datetimes. Negative years represent BCE dates (e.g. <code>-0066-01-01</code> = 66 BCE).</p>
+        <div class="callout callout-note"><div class="callout-label">Advisory — US Authors</div>ISO 8601 differs from US convention. July 20, 1969 is written <strong>1969-07-20</strong>, not 07/20/1969. This applies only to computational values — display formatting is controlled separately by <code>content.date_label</code> and <code>temporal.format_hint</code>.</div>
+
+        <h3 class="sec-sub" id="s2-3">2.3 Schema Version Compatibility</h3>
+        <p>OpenChronology uses Semantic Versioning. The core compatibility rule: <strong>same MAJOR version = compatible</strong>. Parsers MUST silently ignore unrecognized fields — this is the mechanism that makes MINOR version compatibility automatic.</p>
+        <table class="spec-table">
+          <thead><tr><th>Scenario</th><th>Required Behavior</th></tr></thead>
+          <tbody>
+            <tr><td>File MINOR newer than parser</td><td>Load normally — ignore unrecognized fields</td></tr>
+            <tr><td>File MINOR older than parser</td><td>Load normally — apply defaults for missing optional fields</td></tr>
+            <tr><td>File MAJOR newer than parser</td><td>MUST warn user, SHOULD attempt load</td></tr>
+            <tr><td>File MAJOR older than parser</td><td>SHOULD warn user, apply compatibility shim</td></tr>
+            <tr><td><code>schema_version</code> absent</td><td>Assume oldest known version, warn, attempt load</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <div class="sec-divider"></div>
+
+      <!-- §3 The .chron File -->
+      <section class="spec-section" id="s3">
+        <div class="sec-label">§3</div>
+        <h2 class="sec-title">The .chron Event File</h2>
+        <p>A <code>.chron</code> file contains exactly one event. It is the atomic, portable unit of the OpenChronology ecosystem. The root object has three blocks: <code>meta</code>, <code>definitions</code>, and <code>event</code>.</p>
+        <pre><code>{
+  "meta": {
+    "schema_version": "0.2",
+    "author": "String or Array (Optional)",
+    "license": "String (Optional)",
+    "generator": "String (Optional)",
+    "canonical_url": "https://example.com/events/moon-landing.chron",
+    "$schema": "https://schemas.openchronology.org/v0.2/core.schema.json"
+  },
+  "definitions": {
+    "universes": { ... },
+    "calendars":  { ... },
+    "bodies":     { ... }
+  },
+  "event": { ... }
+}</code></pre>
+
+        <h3 class="sec-sub" id="s3-1">3.1 The meta Block</h3>
+        <p>Only <code>schema_version</code> is required. The <code>canonical_url</code> field is the authoritative hosted URL for this file — it enables cross-file linking and deduplication during merges.</p>
+        <div class="callout callout-note"><div class="callout-label">Minimum Valid File</div>Only three fields are required for a minimum valid <code>.chron</code> file: <code>meta.schema_version</code>, <code>event.id</code>, and <code>event.content.title</code>.</div>
+
+        <h3 class="sec-sub" id="s3-2">3.2 The definitions Block</h3>
+        <p>Declares the universes, calendars, and bodies referenced by this event. MAY be omitted entirely when using only built-in types. Built-in calendars include: <code>gregorian</code>, <code>julian</code>, <code>islamic</code>, <code>hebrew</code>, <code>chinese</code>, <code>unix</code>, <code>jdn</code>. Built-in universes: <code>real</code> and <code>relative</code>.</p>
+        <p>External calendars and universes are referenced by URL, file path, or relative path. An <code>inline_fallback</code> field allows a local copy of a calendar definition for offline resilience.</p>
+      </section>
+
+      <div class="sec-divider"></div>
+
+      <!-- §4 .chroncal -->
+      <section class="spec-section" id="s4">
+        <div class="sec-label">§4</div>
+        <h2 class="sec-title">The Calendar Definition File (.chroncal)</h2>
+        <p>A <code>.chroncal</code> file is a standalone JSON document describing a single calendar system — its epoch, structure, and value format. It is independently hosted and referenceable by any number of <code>.chron</code> files.</p>
+        <p>Calendar structures are either <strong>linear</strong> (monotonic, non-cyclical — stardates, project counters, geologic time) or <strong>cyclic</strong> (named months, leap rules — Gregorian, Shire Reckoning, Galactic Standard). Cyclic calendars define their months explicitly; month names become the valid values for <code>temporal.*_value</code> strings.</p>
+        <pre><code>{
+  "meta": {
+    "id": "shire-reckoning",
+    "version": "1.0.0",
+    "display_name": "Shire Reckoning",
+    "canonical_url": "https://calendars.tolkienestate.com/shire-reckoning.chroncal"
+  },
+  "calendar": {
+    "epoch": { "reference_universe": "real", "reference_value": "-0600-01-01T00:00:00Z" },
+    "structure": { "type": "cyclic", "months": [...], "leap_rule": { ... } },
+    "value_format": "YYYY-MMM-DD"
+  }
+}</code></pre>
+      </section>
+
+      <div class="sec-divider"></div>
+
+      <!-- §5 .chronverse -->
+      <section class="spec-section" id="s5">
+        <div class="sec-label">§5</div>
+        <h2 class="sec-title">The Universe Definition File (.chronverse)</h2>
+        <p>A <code>.chronverse</code> file describes a single universe. The real universe is a built-in and never requires a <code>.chronverse</code> file. All other universes — fictional, relative, or custom — benefit from an external definition.</p>
+        <p>Universes may declare a <strong>default calendar</strong>, which events in that universe may inherit, reducing verbosity. They may also declare <strong>canon scopes</strong> — the authoritative list of valid scope values for <code>relation.canon.scope</code> (e.g. <code>"canon"</code>, <code>"legends"</code>).</p>
+        <p><strong>Relative universes</strong> are anchored to another universe via an offset and scale factor — enabling fictional chronologies to be mapped against real-world time when an anchor is known (e.g. Star Wars BBY/ABY anchored to 1977-05-25).</p>
+        <pre><code>{
+  "meta": {
+    "id": "star-wars-disney",
+    "version": "1.0.0",
+    "display_name": "Star Wars Galaxy (Disney Canon)",
+    "canonical_url": "https://example.com/universes/star-wars-disney.chronverse",
+    "$schema": "https://schemas.openchronology.org/v0.2/universe.schema.json"
+  },
+  "universe": {
+    "type": "relative",
+    "anchor": {
+      "target_universe": "real",
+      "offset_value": "1977-05-25T00:00:00Z",
+      "scale_factor": 1.0
+    },
+    "defaults": {
+      "calendar": "galactic-standard",
+      "calendar_ref": "./calendars/galactic-standard.chroncal"
+    },
+    "canon_scopes": [
+      {
+        "id": "canon",
+        "display_name": "Disney Canon",
+        "description": "All works produced or licensed by Lucasfilm after April 25, 2014."
+      },
+      {
+        "id": "legends",
+        "display_name": "Star Wars Legends",
+        "description": "Formerly the Expanded Universe — now non-canonical.",
+        "superseded_by": "canon"
+      }
+    ],
+    "related_universes": [
+      {
+        "id": "star-wars-legends",
+        "relationship": "variant_of",
+        "ref": "https://example.com/universes/star-wars-legends.chronverse"
+      }
+    ]
+  }
+}</code></pre>
+        <div class="callout callout-note">
+          <div class="callout-label">Note</div>
+          The <code>anchor.offset_value</code> is the real-world date that corresponds to this universe's epoch. For Star Wars, anchoring to the original film release date (1977-05-25) allows BBY/ABY dates to be approximately mapped to Gregorian years when needed, while the Galactic Standard calendar governs all event values within the universe.
+        </div>
+      </section>
+
+      <div class="sec-divider"></div>
+
+      <!-- §6 Event Object -->
+      <section class="spec-section" id="s6">
+        <div class="sec-label">§6</div>
+        <h2 class="sec-title">The Event Object</h2>
+        <p>The event object's <code>type</code> field determines its role. <code>event</code> is the default when type is absent.</p>
+        <table class="spec-table">
+          <thead><tr><th>type</th><th>Category</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>event</code></td><td>Functional</td><td>A standard point or span in time — default</td></tr>
+            <tr><td><code>era</code></td><td>Functional</td><td>A named period that may contain other events</td></tr>
+            <tr><td><code>marker</code></td><td>Functional</td><td>A reference point or annotation</td></tr>
+            <tr><td><code>tombstone</code></td><td>Administrative</td><td>A soft-deletion record for merge protection</td></tr>
+            <tr><td><code>deprecated</code></td><td>Administrative</td><td>An event that still exists but has been superseded</td></tr>
+          </tbody>
+        </table>
+
+        <h3 class="sec-sub" id="s6-1">6.1 Content &amp; Localization</h3>
+        <p>The <code>content</code> block holds the human-facing data. <code>title</code> is the only required field for non-tombstone events. <code>description_format</code> controls rendering: <code>plain</code> (default), <code>markdown</code> (CommonMark), or <code>html</code> (Full tier only — parsers MUST sanitize). Translations are keyed by BCP 47 locale codes.</p>
+        <pre><code>"content": {
+  "title": "The Council of Elrond",
+  "description": "A **pivotal meeting** in Rivendell...",
+  "description_format": "markdown",
+  "date_label": "25th of Halimath, SR 1418",
+  "tags": ["diplomacy", "fellowship"],
+  "translations": {
+    "fr": { "title": "Le Conseil d'Elrond", "date_label": "25 Halimath, SR 1418" }
+  }
+}</code></pre>
+
+        <h3 class="sec-sub" id="s6-3">6.3 Temporal Data</h3>
+        <p>The <code>temporal</code> block is the computational engine for date resolution. <code>start_value</code> and <code>end_value</code> are calendar-native strings — opaque to parsers until the calendar is resolved. <code>precision</code> expresses confidence: <code>millisecond</code> through <code>epoch</code>, plus <code>circa</code> (which should always pair with an <code>uncertainty</code> block) and <code>custom</code>.</p>
+        <p>The <code>uncertainty</code> object supports five types: <code>range</code>, <code>before</code>, <code>after</code>, <code>no_earlier_than</code>, <code>no_later_than</code>. An optional <code>confidence</code> field (0.0–1.0) expresses the probability the true date falls within the expressed window.</p>
+        <div class="callout callout-warn"><div class="callout-label">Important</div>Renderers MUST NEVER use <code>start_value</code> or <code>end_value</code> raw strings as display text. Display date resolution priority: (1) translation <code>date_label</code>, (2) base <code>date_label</code>, (3) <code>format_hint</code> auto-format, (4) renderer default.</div>
+
+        <h3 class="sec-sub" id="s6-4">6.4 Spatial Data</h3>
+        <p>Coordinates follow GeoJSON order: <code>[longitude, latitude, altitude]</code>. Geometry types: <code>Point</code>, <code>Polygon</code>, <code>LineString</code>. The <code>body</code> field references a definition in <code>definitions.bodies</code> — enabling non-Earth spatial contexts.</p>
+
+        <h3 class="sec-sub" id="s6-5">6.5 Media</h3>
+        <p>Media items carry a <code>type</code> (<code>video</code>, <code>audio</code>, <code>image</code>, <code>document</code>), a <code>url</code>, and an <code>alt</code> field required for accessibility-compliant renderers. Inside a <code>.chronpkg</code>, asset URLs MAY use the <code>chronpkg://</code> scheme. Parsers encountering <code>chronpkg://</code> URLs outside a bundle context MUST NOT throw a fatal error.</p>
+
+        <h3 class="sec-sub" id="s6-7">6.7 Relations</h3>
+        <p>Relations are <strong>Weak References</strong>. If the target UUID is not present in the current dataset, the parser MUST soft-fail — retaining the relation object and rendering the event normally. The <code>target_url</code> field carries the <code>canonical_url</code> of the target <code>.chron</code> file for cross-file resolution.</p>
+        <table class="spec-table">
+          <thead><tr><th>Category</th><th>Types</th></tr></thead>
+          <tbody>
+            <tr><td>Hierarchical</td><td><code>parent</code>, <code>child</code></td></tr>
+            <tr><td>Ordering</td><td><code>precedes</code>, <code>follows</code>, <code>concurrent_with</code></td></tr>
+            <tr><td>Causal</td><td><code>causes</code>, <code>caused_by</code>, <code>influences</code>, <code>influenced_by</code></td></tr>
+            <tr><td>Spatial</td><td><code>contains</code>, <code>contained_by</code></td></tr>
+            <tr><td>Continuity</td><td><code>contradicts</code>, <code>retcons</code>, <code>retconned_by</code>, <code>variant_of</code></td></tr>
+            <tr><td>References</td><td><code>references</code>, <code>referenced_by</code></td></tr>
+          </tbody>
+        </table>
+        <p>The optional <code>canon</code> object carries a <code>scope</code> (universe-defined) and a <code>status</code>: <code>canon</code>, <code>legends</code>, <code>disputed</code>, <code>non_canon</code>, or <code>unknown</code>.</p>
+
+        <h3 class="sec-sub" id="s6-8">6.8 Significance</h3>
+        <p>The significance block drives <strong>Level of Detail (LOD) rendering</strong> — which events appear at which zoom level. Analogous to Google Maps showing country names when zoomed out and restaurants when zoomed in. Events without a significance block are always visible at all zoom levels.</p>
+        <p><code>value</code> is a 0–1000 score. <code>temporal_scope</code> ranges from <code>epochal</code> through <code>hourly</code>. <code>geographic_scope</code> ranges from <code>global</code> through <code>street</code>. Per-domain metrics support types: <code>political</code>, <code>military</code>, <code>economic</code>, <code>cultural</code>, <code>scientific</code>, <code>environmental</code>, <code>personal</code>, <code>narrative</code>, <code>custom</code>.</p>
+
+        <h3 class="sec-sub" id="s6-9">6.9 Recurrence</h3>
+        <p>Optional. Absence means the event occurs exactly once. <code>frequency.unit</code> values: <code>day</code>, <code>week</code>, <code>month</code>, <code>year</code>, <code>custom</code> — with meaning delegated to the declared calendar. <code>end.type</code>: <code>count</code> (N total occurrences), <code>until</code> (calendar-native end date), or <code>none</code> (perpetual — renderers MUST NOT eagerly expand). Individual instances may be cancelled or modified via the <code>exceptions</code> array.</p>
+
+        <h3 class="sec-sub" id="s6-10">6.10 Tombstone Events</h3>
+        <p>A tombstone is a minimal record occupying the UUID of a deleted event to prevent re-import during merges. Parsers MUST NOT render tombstone events. Tombstone priority: when merging, a tombstone ALWAYS wins over a non-tombstone with the same UUID regardless of load order. Tombstones MUST NOT be silently stripped from merged output.</p>
+        <p>A tombstone MUST NOT contain: <code>content</code>, <code>temporal</code>, <code>spatial</code>, <code>relations</code>, <code>recurrence</code>, <code>significance</code>, <code>media</code>, <code>custom_data</code>, or <code>dynamic</code> blocks.</p>
+
+        <h3 class="sec-sub" id="s6-11">6.11 Deprecated Events</h3>
+        <p>A deprecated event retains all its original data but signals it should be treated with caution. Parsers MUST retain deprecated events in the parsed dataset. The <code>display</code> field controls rendering: <code>visible</code>, <code>distinguished</code> (dimmed or struck-through, default), or <code>hidden</code> (user opts in to show).</p>
+      </section>
+
+      <div class="sec-divider"></div>
+
+      <!-- §7 Implementation Guidelines -->
+      <section class="spec-section" id="s7">
+        <div class="sec-label">§7</div>
+        <h2 class="sec-title">Implementation Guidelines</h2>
+
+        <h3 class="sec-sub">7.1 The Loose Coupling Rule</h3>
+        <ul>
+          <li><strong>Partial Loading</strong> — Parsers MUST load an event even if its related events are missing.</li>
+          <li><strong>Orphans</strong> — Events referencing a missing parent are rendered as top-level items.</li>
+          <li><strong>Deduplication</strong> — When merging, parsers MUST check <code>id</code> for duplicates. <code>canonical_url</code> SHOULD be used as a secondary deduplication key.</li>
+          <li><strong>Tombstone Priority</strong> — Tombstone ALWAYS wins over non-tombstone with the same <code>id</code>, regardless of load order.</li>
+        </ul>
+
+        <h3 class="sec-sub">7.4 Security: Dynamic Formulas</h3>
+        <p>Parsers implementing the <code>dynamic</code> block MUST NOT use <code>eval()</code>, <code>new Function()</code>, <code>exec()</code>, or any mechanism granting formula expressions access to the filesystem, network, or process environment. Parsers MUST use a sandboxed expression evaluator with an explicitly defined function whitelist.</p>
+
+        <h3 class="sec-sub">7.5 Display Date Resolution Priority</h3>
+        <ol>
+          <li>If the active locale's <code>translations</code> entry contains <code>date_label</code> — use it.</li>
+          <li>If the base <code>content</code> block contains <code>date_label</code> — use it.</li>
+          <li>If <code>temporal.format_hint</code> is present — auto-format using <code>pattern</code>, appending <code>era_label</code>.</li>
+          <li>Otherwise — apply renderer default locale-aware formatting.</li>
+        </ol>
+      </section>
+
+      <div class="sec-divider"></div>
+
+      <!-- §8 Transport & Storage -->
+      <section class="spec-section" id="s8">
+        <div class="sec-label">§8</div>
+        <h2 class="sec-title">Transport &amp; Storage Formats</h2>
+
+        <h3 class="sec-sub" id="s8-1">8.1 The Bundle Package (.chronpkg)</h3>
+        <p>A <code>.chronpkg</code> is a ZIP archive — the primary collection format. Directory structure:</p>
+        <pre><code>bundle.chronpkg  (ZIP archive)
+├── manifest.json          ← Required entry point
+├── events/
+│   └── *.chron
+├── calendars/
+│   └── *.chroncal
+├── universes/
+│   └── *.chronverse
+├── assets/
+│   ├── images/
+│   └── datasets/
+└── README.md</code></pre>
+        <p>The <code>manifest.json</code> provides a lightweight index of all contained events. Media assets inside a bundle MAY use the <code>chronpkg://</code> scheme (resolves relative to <code>assets/</code>). Parsers MUST NOT write <code>chronpkg://</code> URLs into any storage context outside a bundle archive.</p>
+
+        <h3 class="sec-sub" id="s8-2">8.2 The Streaming Format (.chronstream)</h3>
+        <p>A <code>.chronstream</code> is Newline-Delimited JSON (NDJSON) — one complete JSON object per line. Line 1 is always the header record; all subsequent lines are event records. The header may declare <code>default_universe</code> and <code>default_calendar</code> that event records inherit, reducing verbosity for homogeneous streams.</p>
+        <p>Three use cases: API responses for large event datasets, export of geological or fictional timelines with hundreds of thousands of events, and append-only event logs.</p>
+
+        <h4 class="sec-subsub">Format Comparison</h4>
+        <table class="spec-table">
+          <thead><tr><th>Property</th><th>.chron</th><th>.chronpkg</th><th>.chronstream</th></tr></thead>
+          <tbody>
+            <tr><td>Contains</td><td>One event</td><td>Many events + assets</td><td>Many event objects</td></tr>
+            <tr><td>Structure</td><td>Single JSON object</td><td>ZIP archive</td><td>NDJSON — one object per line</td></tr>
+            <tr><td>Asset support</td><td>Referenced by URL</td><td>Bundled locally</td><td>Not supported</td></tr>
+            <tr><td>Memory model</td><td>Fully loaded</td><td>Fully loaded</td><td>Streamable / lazy</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <div class="sec-divider"></div>
+
+      <!-- §9 Conformance -->
+      <section class="spec-section" id="s9">
+        <div class="sec-label">§9</div>
+        <h2 class="sec-title">Conformance</h2>
+
+        <h3 class="sec-sub" id="s9-1">9.1 RFC 2119 Key Words</h3>
+        <p>The key words in this specification use the meanings defined in <a href="https://www.rfc-editor.org/rfc/rfc2119">RFC 2119</a>.</p>
+        <table class="spec-table">
+          <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td><strong>MUST</strong> / <strong>MUST NOT</strong></td><td>Absolute requirement. Non-compliance means the implementation does not conform.</td></tr>
+            <tr><td><strong>SHOULD</strong> / <strong>SHOULD NOT</strong></td><td>Strongly recommended. Valid reasons may exist to deviate, but the full implications must be understood and weighed.</td></tr>
+            <tr><td><strong>MAY</strong></td><td>Optional. The implementation is free to include or omit this behavior without affecting conformance.</td></tr>
+          </tbody>
+        </table>
+
+        <h3 class="sec-sub" id="s9-2">9.2 Conformance Tiers</h3>
+        <p>Three tiers, each a strict superset of the one below. Implementations MUST declare which tier they conform to.</p>
+
+        <div class="tier-block tier-1">
+          <div class="tier-header">
+            <div class="tier-name">Tier 1 — Core</div>
+            <span class="tier-badge">Minimum Viable</span>
+          </div>
+          <div class="tier-body">
+            <p>Suitable for lightweight viewers, importers, and single-purpose tools. Must parse <code>meta</code>, <code>definitions</code>, and <code>event</code>; resolve built-in calendars and universes; display <code>content.title</code>, <code>description</code>, <code>tags</code>; respect <code>description_format</code>; apply translations; implement the Weak Reference soft-fail rule; recognize and suppress tombstone events; follow display date resolution priority order.</p>
+          </div>
+        </div>
+
+        <div class="tier-block tier-2">
+          <div class="tier-header">
+            <div class="tier-name">Tier 2 — Standard</div>
+            <span class="tier-badge">Recommended</span>
+          </div>
+          <div class="tier-body">
+            <p>Everything in Tier 1, plus: fetch and resolve external <code>.chroncal</code> and <code>.chronverse</code> references; apply default calendar from universe definitions; implement LOD rendering using the significance block; support recurrence expansion (lazy); render deprecated events per their <code>display</code> field; validate against the Core JSON Schema.</p>
+          </div>
+        </div>
+
+        <div class="tier-block tier-3">
+          <div class="tier-header">
+            <div class="tier-name">Tier 3 — Full</div>
+            <span class="tier-badge">Complete</span>
+          </div>
+          <div class="tier-body">
+            <p>Everything in Tier 2, plus: produce one <code>.chron</code> file per event; support <code>.chronpkg</code> import and export; support <code>.chronstream</code> export and import; implement sandboxed dynamic formula evaluation; validate against the Full JSON Schema; populate <code>canonical_url</code> in produced files; sanitize HTML content when <code>description_format</code> is <code>"html"</code>.</p>
+          </div>
+        </div>
+
+        <h3 class="sec-sub" id="s9-3">9.3 JSON Schema Registry</h3>
+        <p>Machine-readable JSON Schemas (draft/2020-12) are published at <a href="https://schemas.openchronology.org/v0.2/">schemas.openchronology.org/v0.2/</a>:</p>
+        <div class="schema-row">
+          <div class="schema-item"><span class="schema-file">core.schema.json</span><span class="schema-desc">Minimum required structure of a .chron file. The Tier 1 normative conformance floor.</span></div>
+          <div class="schema-item"><span class="schema-file">full.schema.json</span><span class="schema-desc">Complete .chron validation including all optional blocks. Required for Tier 3.</span></div>
+          <div class="schema-item"><span class="schema-file">calendar.schema.json</span><span class="schema-desc">Validates standalone .chroncal calendar definition files.</span></div>
+          <div class="schema-item"><span class="schema-file">universe.schema.json</span><span class="schema-desc">Validates standalone .chronverse universe definition files.</span></div>
+          <div class="schema-item"><span class="schema-file">manifest.schema.json</span><span class="schema-desc">Validates manifest.json inside .chronpkg bundle archives.</span></div>
+          <div class="schema-item"><span class="schema-file">stream.schema.json</span><span class="schema-desc">Validates .chronstream header records (line 1 of every stream file).</span></div>
+        </div>
+      </section>
+
+      <div class="sec-divider"></div>
+
+      <!-- Appendix A -->
+      <section class="spec-section" id="sa">
+        <div class="sec-label">Appendix A</div>
+        <h2 class="sec-title">Advisory SQL Schema</h2>
+        <p>Non-normative. Implementations are free to store event data in any manner. This schema is provided as a reference for developers building relational database backends. Designed for SQLite, PostgreSQL, and MySQL compatibility.</p>
+        <p>Design principles: the full event JSON blob is stored in a <code>data</code> column for complete fidelity; indexed columns are projections of frequently-queried fields; temporal values are stored as both calendar-native strings and resolved Unix timestamps; tombstone records MUST be retained — never hard-deleted.</p>
+        <p>The advisory SQL schema covers seven tables — <code>events</code>, <code>packages</code>, <code>event_relations</code>, <code>event_metrics</code>, <code>event_media</code>, <code>calendars</code>, and <code>universes</code> — with indexes, a tombstone-safe upsert pattern, and example queries.</p>
+        <p style="margin-top:1.2rem;"><a href="sql-schema.html">→ View the Advisory SQL Schema</a></p>
+      </section>
+
+      <div class="sec-divider"></div>
+
+      <!-- Appendix B -->
+      <section class="spec-section" id="sb">
+        <div class="sec-label">Appendix B</div>
+        <h2 class="sec-title">Changelog</h2>
+        <table class="spec-table">
+          <thead><tr><th>Version</th><th>Date</th><th>Summary</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>0.1</code></td>
+              <td>Feb 2026</td>
+              <td>Initial draft. Root object with events array, basic relations, significance, dynamic formulas. Single file model.</td>
+            </tr>
+            <tr>
+              <td><code>0.2</code></td>
+              <td>May 2026</td>
+              <td>Complete architectural restructuring. Document-per-event model. New .chronverse file. .chroncal renamed. .chronpkg and .chronstream redefined. Conformance tiers updated. RFC 2119 language adopted. Schema registry live.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+    </main>
+  </div>
+
+  <footer>
+    <div class="footer-logo">OpenChronology</div>
+    <ul class="footer-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="https://schemas.openchronology.org">Schemas</a></li>
+      <li><a href="https://github.com/knoj/openchronology">GitHub</a></li>
+      <li><a href="https://1000yearproject.org">1000 Year Project</a></li>
+    </ul>
+    <div class="footer-meta">v0.2 Pre-Release · CC-BY-4.0</div>
+  </footer>
+
+  <script>
+    // Active TOC link on scroll
+    const sections = document.querySelectorAll('[id]');
+    const tocLinks = document.querySelectorAll('#toc a');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          tocLinks.forEach(l => l.classList.remove('active'));
+          const active = document.querySelector(`#toc a[href="#${entry.target.id}"]`);
+          if (active) active.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-80px 0px -60% 0px' });
+    sections.forEach(s => observer.observe(s));
+  </script>
+</body>
+</html>
