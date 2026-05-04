@@ -1,0 +1,110 @@
+{
+  "meta": {
+    "schema_version": "0.2",
+    "canonical_url": "https://1000yearproject.org/events/black-death-1347.chron",
+    "author": "OpenChronology Working Group",
+    "license": "CC-BY-4.0",
+    "generator": "OpenChronology Author — Hand-authored example",
+    "$schema": "https://schemas.openchronology.org/v0.2/full.schema.json"
+  },
+  "definitions": {
+    "universes": {
+      "real": { "type": "builtin" }
+    },
+    "calendars": {
+      "gregorian": { "type": "builtin" }
+    },
+    "bodies": {
+      "earth": { "type": "builtin" }
+    }
+  },
+  "event": {
+    "id": "b6c2f831-9d74-4a05-87e1-4d730e8b29cf",
+    "type": "era",
+    "content": {
+      "title": "The Black Death",
+      "description": "The **Black Death** was the deadliest pandemic in recorded human history, caused by the bacterium *Yersinia pestis*. Originating in Central Asia and arriving in Europe via Crimean trading ports in 1346–1347, it swept across the continent between **1347 and 1351**, killing an estimated **one-third to one-half of Europe's population** — roughly 25–50 million people. Global death toll estimates range from 75 to 200 million.\n\nThe pandemic spread through multiple transmission vectors: bubonic plague (flea bites), pneumonic plague (airborne), and septicemic plague (blood infection). It arrived in Sicily in October 1347 and reached England, Scandinavia, and Russia by 1351. Some regions lost 60–70% of their populations in a matter of months.\n\nThe Black Death profoundly reshaped European society: it triggered labor shortages that accelerated the decline of feudalism, sparked waves of religious fervor and persecution (particularly of Jewish communities), transformed art and literature, and catalyzed debates on medical and theological authority that would echo into the Renaissance and Reformation.\n\nSee: [Wikipedia — Black Death](https://en.wikipedia.org/wiki/Black_Death) | [Wikipedia — Yersinia pestis](https://en.wikipedia.org/wiki/Yersinia_pestis)",
+      "description_format": "markdown",
+      "date_label": "1347–1351",
+      "tags": [
+        "pandemic",
+        "plague",
+        "medieval",
+        "europe",
+        "population",
+        "disease",
+        "yersinia-pestis",
+        "social-history",
+        "1000-year-project"
+      ],
+      "translations": {
+        "fr": {
+          "title": "La Peste Noire",
+          "description": "La Peste Noire (1347–1351) est la pandémie la plus meurtrière de l'histoire humaine enregistrée, tuant entre un tiers et la moitié de la population européenne.",
+          "date_label": "1347–1351"
+        },
+        "de": {
+          "title": "Der Schwarze Tod",
+          "description": "Der Schwarze Tod (1347–1351) war die tödlichste Pandemie der aufgezeichneten Menschheitsgeschichte, verursacht durch das Bakterium Yersinia pestis.",
+          "date_label": "1347–1351"
+        }
+      }
+    },
+    "temporal": {
+      "universe": "real",
+      "calendar": "gregorian",
+      "start_value": "1347-01-01",
+      "end_value": "1351-12-31",
+      "precision": "year",
+      "format_hint": {
+        "pattern": "YYYY",
+        "era_label": null
+      },
+      "uncertainty": {
+        "type": "range",
+        "margin_value": 1,
+        "margin_unit": "year",
+        "confidence": 0.9
+      }
+    },
+    "spatial": {
+      "body": "earth",
+      "crs": "wgs84",
+      "region_codes": ["DE", "FR", "GB", "IT", "ES", "PL", "RU"],
+      "custom_region": "Europe and Near East",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [14.0, 48.0, 0],
+        "radius_meters": 3500000,
+        "label": "Approximate epicenter of European spread"
+      }
+    },
+    "significance": {
+      "value": 990,
+      "temporal_scope": "generational",
+      "geographic_scope": "global",
+      "metrics": [
+        { "type": "demographic", "value": 1000 },
+        { "type": "social",      "value": 980 },
+        { "type": "economic",    "value": 970 },
+        { "type": "medical",     "value": 960 }
+      ]
+    },
+    "relations": [
+      {
+        "type": "related_to",
+        "target_url": "https://en.wikipedia.org/wiki/Black_Death",
+        "description": "Wikipedia: Black Death",
+        "canon": "primary",
+        "bidirectional": false
+      },
+      {
+        "type": "related_to",
+        "target_url": "https://en.wikipedia.org/wiki/Yersinia_pestis",
+        "description": "Wikipedia: Yersinia pestis — causative bacterium",
+        "canon": "primary",
+        "bidirectional": false
+      }
+    ]
+  }
+}
