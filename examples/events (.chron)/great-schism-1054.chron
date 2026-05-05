@@ -1,41 +1,46 @@
 {
   "meta": {
-    "schema_version": "0.2",
+    "schema_version": "0.3",
     "canonical_url": "https://1000yearproject.org/events/great-schism-1054.chron",
     "author": "OpenChronology Working Group",
     "license": "CC-BY-4.0",
     "generator": "OpenChronology Author — Hand-authored example",
-    "$schema": "https://schemas.openchronology.org/v0.2/full.schema.json"
+    "$schema": "https://schemas.openchronology.org/v0.3/full.schema.json"
   },
   "definitions": {
-    "universes": {
-      "real": { "type": "builtin" }
-    },
-    "calendars": {
-      "gregorian": { "type": "builtin" }
-    },
-    "bodies": {
-      "earth": { "type": "builtin" }
-    }
+    "universes": { "real": { "type": "builtin" } },
+    "calendars": { "gregorian": { "type": "builtin" } },
+    "bodies":    { "earth": { "type": "builtin" } }
   },
   "event": {
     "id": "e0914d62-2b87-4cc1-f3a8-95b1c7a843d0",
     "type": "event",
     "content": {
       "title": "The Great Schism — East–West Division of Christianity",
-      "description": "On **July 16, 1054**, Cardinal Humbert of Silva Candida, acting as legate of Pope Leo IX (who had died in April), placed a **Papal Bull of Excommunication** on the altar of the **Hagia Sophia** in Constantinople, directed at Patriarch Michael I Cerularius. Cerularius responded by excommunicating the papal legates. This exchange — the culmination of decades of theological, political, and liturgical tension — is the traditional date marking the **Great Schism** (also called the East–West Schism) and the formal split of Western Roman Catholic and Eastern Orthodox Christianity.\n\nThe underlying disputes included disagreements over the **Filioque clause** (whether the Holy Spirit proceeds from the Father alone, or from the Father *and* the Son), papal authority and primacy, the use of unleavened vs. leavened bread in the Eucharist, clerical celibacy, and jurisdictional conflicts over missionary territories in Bulgaria.\n\nHistorians note that the 1054 date is somewhat symbolic — the rupture had been building for centuries and was not considered final by contemporaries. The mutual excommunications were formally lifted by Pope Paul VI and Patriarch Athenagoras I in **December 1965**, nearly 900 years later.\n\nThe two resulting churches — the **Roman Catholic Church** and the **Eastern Orthodox Church** — remain in formal schism today, together representing over 1.7 billion Christians.\n\nSee: [Wikipedia — East–West Schism](https://en.wikipedia.org/wiki/East%E2%80%93West_Schism) | [Wikipedia — Hagia Sophia](https://en.wikipedia.org/wiki/Hagia_Sophia)",
+      "description": "On **July 16, 1054**, Cardinal Humbert of Silva Candida placed a **Papal Bull of Excommunication** on the altar of the **Hagia Sophia** in Constantinople, directed at Patriarch Michael I Cerularius. Cerularius responded by excommunicating the papal legates. This exchange is the traditional date marking the **Great Schism** — the formal split of Western Roman Catholic and Eastern Orthodox Christianity.\n\nThe underlying disputes included disagreements over the **Filioque clause**, papal authority and primacy, the use of unleavened vs. leavened bread in the Eucharist, clerical celibacy, and jurisdictional conflicts in Bulgaria.\n\nHistorians note the 1054 date is somewhat symbolic — the rupture had been building for centuries. The mutual excommunications were formally lifted by Pope Paul VI and Patriarch Athenagoras I in **December 1965**, nearly 900 years later.\n\nThe two resulting churches — the **Roman Catholic Church** and the **Eastern Orthodox Church** — remain in formal schism today, together representing over 1.7 billion Christians.",
       "description_format": "markdown",
       "date_label": "July 16, 1054",
       "tags": [
-        "religion",
-        "christianity",
-        "catholicism",
-        "eastern-orthodoxy",
-        "medieval",
-        "papacy",
-        "byzantine-empire",
-        "schism",
-        "1000-year-project"
+        "religion", "christianity", "catholicism", "eastern-orthodoxy",
+        "medieval", "papacy", "byzantine-empire", "schism", "1000-year-project"
+      ],
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/East%E2%80%93West_Schism",
+          "title": "Wikipedia — East–West Schism",
+          "type": "wikipedia"
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Hagia_Sophia",
+          "title": "Wikipedia — Hagia Sophia",
+          "type": "wikipedia",
+          "description": "Site of the excommunication event"
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Michael_I_Cerularius",
+          "title": "Wikipedia — Patriarch Michael I Cerularius",
+          "type": "wikipedia"
+        }
       ],
       "translations": {
         "el": {
@@ -55,10 +60,7 @@
       "calendar": "gregorian",
       "start_value": "1054-07-16",
       "precision": "day",
-      "format_hint": {
-        "pattern": "MMMM D, YYYY",
-        "era_label": null
-      },
+      "format_hint": { "pattern": "MMMM D, YYYY", "era_label": null },
       "uncertainty": {
         "type": "range",
         "margin_value": 0,
@@ -86,29 +88,6 @@
         { "type": "political",  "value": 900 },
         { "type": "cultural",   "value": 940 }
       ]
-    },
-    "relations": [
-      {
-        "type": "related_to",
-        "target_url": "https://en.wikipedia.org/wiki/East%E2%80%93West_Schism",
-        "description": "Wikipedia: East–West Schism",
-        "canon": "primary",
-        "bidirectional": false
-      },
-      {
-        "type": "related_to",
-        "target_url": "https://en.wikipedia.org/wiki/Hagia_Sophia",
-        "description": "Wikipedia: Hagia Sophia — site of the excommunication event",
-        "canon": "primary",
-        "bidirectional": false
-      },
-      {
-        "type": "related_to",
-        "target_url": "https://en.wikipedia.org/wiki/Michael_I_Cerularius",
-        "description": "Wikipedia: Patriarch Michael I Cerularius",
-        "canon": "primary",
-        "bidirectional": false
-      }
-    ]
+    }
   }
 }

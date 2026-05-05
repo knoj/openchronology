@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.openchronology.org/v0.3/stream.schema.json",
+  "title": "OpenChronology Stream Header Schema",
+  "description": "Schema for .chronstream header records — the mandatory first line of every .chronstream NDJSON file. A .chronstream is Newline-Delimited JSON: one complete JSON object per line. Line 1 is always the header record (validated by this schema). All subsequent lines are event records (validated by core.schema.json's $defs/event, inline within a stream envelope).",
+  "x-openchronology-version": "0.3",
+  "x-openchronology-status": "pre-release",
+  "x-openchronology-license": "CC-BY-4.0",
+  "x-openchronology-mime": "application/vnd.openchronology.stream+ndjson",
+  "x-openchronology-note": "This schema validates the header record only. For the event record structure, see core.schema.json or full.schema.json. Event records in a stream omit the top-level 'meta' and 'definitions' wrapper — they are flat objects with a record_type field.",
+
+  "type": "object",
+  "required": ["record_type", "schema_version", "title"],
+  "additionalProperties": false,
+
+  "properties": {
+
+    "record_type": {
+      "type": "string",
+      "const": "header",
+      "description": "Always 'header'. Identifies this as the stream header record. Parsers MUST treat any line with record_type 'header' after the first line as a parse error."
+    },
+
+    "schema_version": {
+      "type": "string",
+      "const": "0.3",
+      "description": "Must be '0.2'. Identifies the OpenChronology spec version this stream conforms to."
+    },
+
+    "title": {
+      "type": "string",
+      "description": "Human-readable name for this event stream (e.g. 'Fellowship Timeline', 'Apollo Program Events')."
+    },
+
+    "description": {
+      "type": "string",
+      "description": "Optional summary of the stream's content and scope."
+    },
+
+    "default_universe": {
+      "type": "string",
+      "description": "Universe ID applied to event records that omit temporal.universe. Reduces verbosity for homogeneous streams."
+    },
+
+    "default_calendar": {
+      "type": "string",
+      "description": "Calendar ID applied to event records that omit temporal.calendar. Reduces verbosity for homogeneous streams."
+    },
+
+    "calendars": {
+      "type": "object",
+      "description": "Calendar reference map — same structure as definitions.calendars in a .chron file. Applies to all event records in the stream.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["type"],
+        "additionalProperties": false,
+        "properties": {
+          "type":            { "type": "string", "enum": ["builtin", "external"] },
+          "ref":             { "type": "string", "description": "URL, file:// URI, or path to the .chroncal file. Required when type is 'external'." },
+          "ref_version":     { "type": "string" },
+          "canonical_url":   { "type": "string", "format": "uri" },
+          "inline_fallback": { "type": "object", "description": "Offline-resilient local copy of the calendar definition." }
+        },
+        "if":   { "properties": { "type": { "const": "external" } }, "required": ["type"] },
+        "then": { "required": ["ref"] }
+      }
+    },
+
+    "universes": {
+      "type": "object",
+      "description": "Universe reference map — same structure as definitions.universes in a .chron file. Applies to all event records in the stream.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["type"],
+        "additionalProperties": false,
+        "properties": {
+          "type":        { "type": "string", "enum": ["builtin", "external", "absolute", "relative"] },
+          "ref":         { "type": "string", "description": "URL, file:// URI, or path to the .chronverse file. Required when type is 'external'." },
+          "ref_version": { "type": "string" },
+          "base_unit":   { "type": "string" },
+          "anchor": {
+            "type": "object",
+            "required": ["target_universe", "offset_value", "scale_factor"],
+            "additionalProperties": false,
+            "properties": {
+              "target_universe": { "type": "string" },
+              "offset_value":    { "type": "string" },
+              "scale_factor":    { "type": "number" }
+            }
+          }
+        },
+        "if":   { "properties": { "type": { "const": "external" } }, "required": ["type"] },
+        "then": { "required": ["ref"] }
+      }
+    },
+
+    "event_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Advisory total number of event records in the stream. Parsers MUST NOT rely on this for correctness — it may be absent or inaccurate in append-only streams."
+    },
+
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 datetime when this stream was produced."
+    },
+
+    "author": {
+      "description": "Author(s) of the stream or its contents.",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+      ]
+    },
+
+    "license": {
+      "type": "string",
+      "description": "License identifier for the stream's content."
+    },
+
+    "canonical_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Authoritative hosted URL for this stream, if published."
+    },
+
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+
+    "$schema": {
+      "type": "string",
+      "format": "uri",
+      "description": "JSON Schema URL for validation. Should point to this schema."
+    }
+
+  },
+
+  "$defs": {
+    "$comment": "Stream event records are not defined here — they are validated against core.schema.json or full.schema.json. A stream event record is a flat object with record_type:'event' plus all fields from the .chron event block (id, type, content, temporal, spatial, etc.), without the meta or definitions wrapper. The record_type field is the only addition required by the stream format."
+  }
+}

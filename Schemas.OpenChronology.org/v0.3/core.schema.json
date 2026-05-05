@@ -1,0 +1,481 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.openchronology.org/v0.3/core.schema.json",
+  "title": "OpenChronology Core Event Schema",
+  "description": "Normative conformance floor for .chron files. Covers Tier 1 (Core) requirements. Every conformant .chron file must be valid against this schema.",
+  "x-openchronology-version": "0.3",
+  "x-openchronology-status": "pre-release",
+  "x-openchronology-license": "CC-BY-4.0",
+
+  "type": "object",
+  "required": ["meta", "event"],
+  "additionalProperties": false,
+
+  "properties": {
+
+    "meta": {
+      "type": "object",
+      "required": ["schema_version"],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "type": "string",
+          "const": "0.3"
+        },
+        "author": {
+          "oneOf": [
+            { "type": "string" },
+            { "type": "array", "items": { "type": "string" }, "minItems": 1 }
+          ]
+        },
+        "license":       { "type": "string" },
+        "generator":     { "type": "string" },
+        "canonical_url": { "type": "string", "format": "uri" },
+        "$schema":       { "type": "string", "format": "uri" }
+      }
+    },
+
+    "definitions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+
+        "universes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["type"],
+            "additionalProperties": false,
+            "properties": {
+              "type":        { "type": "string", "enum": ["builtin","external","absolute","relative"] },
+              "ref":         { "type": "string" },
+              "ref_version": { "type": "string" },
+              "base_unit":   { "type": "string" },
+              "anchor": {
+                "type": "object",
+                "required": ["target_universe","offset_value","scale_factor"],
+                "additionalProperties": false,
+                "properties": {
+                  "target_universe": { "type": "string" },
+                  "offset_value":    { "type": "string" },
+                  "scale_factor":    { "type": "number" }
+                }
+              }
+            },
+            "if":   { "properties": { "type": { "const": "external" } }, "required": ["type"] },
+            "then": { "required": ["ref"] }
+          }
+        },
+
+        "calendars": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["type"],
+            "additionalProperties": false,
+            "properties": {
+              "type":            { "type": "string", "enum": ["builtin","external"] },
+              "ref":             { "type": "string" },
+              "ref_version":     { "type": "string" },
+              "canonical_url":   { "type": "string", "format": "uri" },
+              "inline_fallback": { "type": "object" }
+            },
+            "if":   { "properties": { "type": { "const": "external" } }, "required": ["type"] },
+            "then": { "required": ["ref"] }
+          }
+        },
+
+        "bodies": {
+          "type": "object",
+          "description": "Reference map of spatial body identifiers. Built-in bodies (earth, moon, mars, sun) may be declared as { type: 'builtin' } without a name field.",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["type"],
+            "additionalProperties": false,
+            "properties": {
+              "name":      { "type": "string", "description": "Display name. Required for custom bodies; optional for builtin." },
+              "type":      { "type": "string", "description": "'builtin' for recognized built-in bodies; 'planet', 'moon', 'fictional_world', etc. for custom." },
+              "crs":       { "type": "string" },
+              "image_url": { "type": "string", "format": "uri" },
+              "width":     { "type": "integer" },
+              "height":    { "type": "integer" }
+            },
+            "if":   { "properties": { "type": { "not": { "const": "builtin" } } } },
+            "then": { "required": ["name", "type"] }
+          }
+        }
+
+      }
+    },
+
+    "event": { "$ref": "#/$defs/event" }
+  },
+
+  "$defs": {
+
+    "event": {
+      "type": "object",
+      "required": ["id", "type"],
+      "properties": {
+        "id":           { "type": "string", "format": "uuid" },
+        "type":         { "type": "string", "enum": ["event","era","marker","tombstone","deprecated"], "default": "event" },
+        "content":      { "$ref": "#/$defs/content" },
+        "temporal":     { "$ref": "#/$defs/temporal" },
+        "spatial":      { "$ref": "#/$defs/spatial" },
+        "media":        { "type": "array", "items": { "$ref": "#/$defs/media_item" } },
+        "custom_data":  { "type": "object" },
+        "relations":    { "type": "array", "items": { "$ref": "#/$defs/relation" } },
+        "significance": { "$ref": "#/$defs/significance" },
+        "recurrence":   { "$ref": "#/$defs/recurrence" },
+        "dynamic":      { "$ref": "#/$defs/dynamic" },
+        "tombstone":    { "$ref": "#/$defs/tombstone_meta" },
+        "deprecated":   { "$ref": "#/$defs/deprecated_meta" }
+      },
+      "if":   { "properties": { "type": { "const": "tombstone" } }, "required": ["type"] },
+      "then": {
+        "required": ["tombstone"],
+        "not": {
+          "anyOf": [
+            { "required": ["content"] }, { "required": ["temporal"] }, { "required": ["spatial"] },
+            { "required": ["relations"] }, { "required": ["recurrence"] }, { "required": ["significance"] },
+            { "required": ["media"] }, { "required": ["custom_data"] }, { "required": ["dynamic"] }
+          ]
+        }
+      },
+      "else": {
+        "if":   { "properties": { "type": { "const": "deprecated" } }, "required": ["type"] },
+        "then": { "required": ["deprecated", "content"] },
+        "else": { "required": ["content"] }
+      }
+    },
+
+    "content": {
+      "type": "object",
+      "required": ["title"],
+      "additionalProperties": false,
+      "properties": {
+        "title":              { "type": "string" },
+        "description":        { "type": "string" },
+        "description_format": { "type": "string", "enum": ["plain","markdown","html"], "default": "plain" },
+        "date_label":         { "type": "string" },
+        "tags":               { "type": "array", "items": { "type": "string" } },
+        "sources": {
+          "type": "array",
+          "description": "External citations — Wikipedia articles, official pages, academic papers, and any non-.chron URLs. Use this instead of the relations block for external links.",
+          "items": { "$ref": "#/$defs/source_item" }
+        },
+        "translations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "title":              { "type": "string" },
+              "description":        { "type": "string" },
+              "date_label":         { "type": "string" },
+              "description_format": { "type": "string", "enum": ["plain","markdown","html"] }
+            }
+          }
+        }
+      }
+    },
+
+    "source_item": {
+      "type": "object",
+      "required": ["url", "title", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "url":         { "type": "string", "format": "uri", "description": "URL of the external source." },
+        "title":       { "type": "string", "description": "Human-readable title of the source." },
+        "type": {
+          "type": "string",
+          "enum": ["wikipedia","official","academic","archive","news","reference","custom"],
+          "description": "Category of source."
+        },
+        "description": { "type": "string", "description": "Optional annotation about this source." }
+      }
+    },
+
+    "temporal": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "universe":    { "type": "string" },
+        "calendar":    { "type": "string" },
+        "start_value": { "type": "string" },
+        "end_value":   { "type": "string" },
+        "precision": {
+          "type": "string",
+          "enum": ["millisecond","second","minute","hour","day","month","year","decade","century","millennium","epoch","circa","custom"]
+        },
+        "format_hint": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "pattern":   { "type": "string" },
+            "era_label": { "type": ["string","null"] }
+          }
+        },
+        "uncertainty": {
+          "type": "object",
+          "required": ["type","margin_value","margin_unit"],
+          "additionalProperties": false,
+          "properties": {
+            "type":         { "type": "string", "enum": ["range","before","after","no_earlier_than","no_later_than"] },
+            "margin_value": { "type": "number" },
+            "margin_unit":  { "type": "string" },
+            "confidence":   { "type": ["number","null"], "minimum": 0, "maximum": 1 }
+          }
+        }
+      }
+    },
+
+    "spatial": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "body":          { "type": "string" },
+        "crs":           { "type": "string" },
+        "region_codes":  { "type": "array", "items": { "type": "string" } },
+        "custom_region": { "type": "string" },
+        "geometry": {
+          "type": "object",
+          "required": ["type","coordinates"],
+          "additionalProperties": false,
+          "properties": {
+            "type":          { "type": "string", "enum": ["Point","Polygon","LineString"] },
+            "coordinates":   { "type": "array" },
+            "radius_meters": { "type": "number" },
+            "label":         { "type": "string" }
+          }
+        }
+      }
+    },
+
+    "media_item": {
+      "type": "object",
+      "required": ["type","url"],
+      "additionalProperties": false,
+      "properties": {
+        "type":    { "type": "string", "enum": ["video","audio","image","document"] },
+        "url":     { "type": "string" },
+        "alt":     { "type": "string" },
+        "caption": { "type": "string" },
+        "credit":  { "type": "string" },
+        "sync": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "anchor_value":   { "type": "string" },
+            "offset_seconds": { "type": "number" }
+          }
+        }
+      }
+    },
+
+    "relation": {
+      "type": "object",
+      "description": "Weak reference to another .chron event. target_id is required. For external citations (Wikipedia, etc.) use content.sources instead.",
+      "required": ["type","target_id"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "parent","child",
+            "precedes","follows","concurrent_with",
+            "causes","caused_by",
+            "influences","influenced_by",
+            "contains","contained_by",
+            "contradicts",
+            "retcons","retconned_by",
+            "variant_of",
+            "references","referenced_by"
+          ]
+        },
+        "target_id":     { "type": "string", "format": "uuid" },
+        "target_url":    { "type": "string", "description": "canonical_url of the target .chron file. MAY be fetched; MUST NOT be required for reachability." },
+        "description":   { "type": "string" },
+        "bidirectional": { "type": "boolean", "default": false },
+        "confidence":    { "type": ["number","null"], "minimum": 0, "maximum": 1 },
+        "canon": {
+          "oneOf": [
+            { "$ref": "#/$defs/canon_object" },
+            { "type": "array", "items": { "$ref": "#/$defs/canon_object" }, "minItems": 1 }
+          ]
+        }
+      }
+    },
+
+    "canon_object": {
+      "type": "object",
+      "required": ["scope","status"],
+      "additionalProperties": false,
+      "properties": {
+        "scope":  { "type": "string" },
+        "status": { "type": "string", "enum": ["canon","legends","disputed","non_canon","unknown"] }
+      }
+    },
+
+    "significance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "value": { "type": "number", "minimum": 0, "maximum": 1000 },
+        "temporal_scope": {
+          "type": "string",
+          "enum": ["epochal","millennial","centennial","generational","decadal","annual","seasonal","monthly","weekly","daily","hourly"]
+        },
+        "geographic_scope": {
+          "type": "string",
+          "enum": ["global","continental","national","regional","local","street"]
+        },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["type","value"],
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "political","military","economic","cultural","scientific","technological",
+                  "environmental","ecological","demographic","social","medical","religious",
+                  "personal","narrative","custom"
+                ]
+              },
+              "value":       { "type": "number", "minimum": 0, "maximum": 1000 },
+              "description": { "type": "string", "description": "Required when type is 'custom'." }
+            }
+          }
+        },
+        "visibility": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "min_temporal_zoom":   { "type": "string" },
+            "max_temporal_zoom":   { "type": "string" },
+            "min_geographic_zoom": { "type": "string" },
+            "max_geographic_zoom": { "type": "string" }
+          }
+        }
+      }
+    },
+
+    "recurrence": {
+      "type": "object",
+      "required": ["enabled","frequency"],
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "frequency": {
+          "type": "object",
+          "required": ["unit","interval"],
+          "additionalProperties": false,
+          "properties": {
+            "unit":     { "type": "string", "enum": ["day","week","month","year","custom"] },
+            "interval": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "on": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "month": { "type": "string" },
+            "day":   { "type": "integer", "minimum": 1 }
+          }
+        },
+        "end": {
+          "type": "object",
+          "required": ["type"],
+          "additionalProperties": false,
+          "properties": {
+            "type":  { "type": "string", "enum": ["count","until","none"] },
+            "count": { "type": "integer", "minimum": 1 },
+            "until": { "type": "string" }
+          }
+        },
+        "exceptions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["instance_value","type"],
+            "additionalProperties": false,
+            "properties": {
+              "instance_value": { "type": "string" },
+              "type":           { "type": "string", "enum": ["cancelled","modified"] },
+              "overrides":      { "type": "object" }
+            }
+          }
+        }
+      }
+    },
+
+    "dynamic": {
+      "type": "object",
+      "required": ["enabled"],
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "formulas": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["target_field","type","expression"],
+            "additionalProperties": false,
+            "properties": {
+              "target_field": { "type": "string" },
+              "type":         { "type": "string", "enum": ["interpolation","formula"] },
+              "expression":   { "type": "string" },
+              "dataset":      { "type": "array" },
+              "dataset_ref": {
+                "type": "object",
+                "required": ["type"],
+                "additionalProperties": false,
+                "properties": {
+                  "type":   { "type": "string", "enum": ["url","file"] },
+                  "url":    { "type": "string", "format": "uri" },
+                  "path":   { "type": "string" },
+                  "format": { "type": "string", "const": "openchronology_dataset" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "tombstone_meta": {
+      "type": "object",
+      "required": ["original_type","reason"],
+      "additionalProperties": false,
+      "properties": {
+        "original_type": { "type": "string", "enum": ["event","era","marker"] },
+        "reason":        { "type": "string" },
+        "deleted_by":    { "type": "string" },
+        "deleted_at":    { "type": "string", "format": "date-time" },
+        "superseded_by": { "type": "string", "format": "uuid" }
+      }
+    },
+
+    "deprecated_meta": {
+      "type": "object",
+      "required": ["original_type","reason"],
+      "additionalProperties": false,
+      "properties": {
+        "original_type": { "type": "string", "enum": ["event","era","marker"] },
+        "reason":        { "type": "string" },
+        "deprecated_by": { "type": "string" },
+        "deprecated_at": { "type": "string", "format": "date-time" },
+        "superseded_by": { "type": "string", "format": "uuid" },
+        "display": {
+          "type": "string",
+          "enum": ["visible","distinguished","hidden"],
+          "default": "distinguished"
+        }
+      }
+    }
+
+  }
+}

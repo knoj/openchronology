@@ -1,40 +1,46 @@
 {
   "meta": {
-    "schema_version": "0.2",
+    "schema_version": "0.3",
     "canonical_url": "https://1000yearproject.org/events/brotherhood-tree-sprouting.chron",
     "author": "OpenChronology Working Group",
     "license": "CC-BY-4.0",
     "generator": "OpenChronology Author — Hand-authored example",
-    "$schema": "https://schemas.openchronology.org/v0.2/full.schema.json"
+    "$schema": "https://schemas.openchronology.org/v0.3/full.schema.json"
   },
   "definitions": {
-    "universes": {
-      "real": { "type": "builtin" }
-    },
-    "calendars": {
-      "gregorian": { "type": "builtin" }
-    },
-    "bodies": {
-      "earth": { "type": "builtin" }
-    }
+    "universes": { "real": { "type": "builtin" } },
+    "calendars": { "gregorian": { "type": "builtin" } },
+    "bodies":    { "earth": { "type": "builtin" } }
   },
   "event": {
     "id": "a3f7c210-84b2-4e91-b3d5-7c19f02e6a48",
     "type": "event",
     "content": {
       "title": "Brotherhood Tree — Sprouting of the Seed",
-      "description": "A coast redwood (*Sequoia sempervirens*) takes root in what is now Klamath, California — the tree that will one day stand 297 feet tall and be named the **Brotherhood Tree**.\n\nNow over 2,000 years old, the Brotherhood Tree is one of the oldest and largest living organisms in the world. It stands on the Forest Experience Trail at the [Trees of Mystery](https://treesofmystery.net/redwood-trees/) attraction in Klamath, CA. The tree measures 19 feet in diameter, 60 feet in circumference, and 297 feet in height. It was named in hope for the *brotherhood of man* and as a symbol of resilience.\n\nThe tree's bark bears fire scars from an event approximately 500 years ago, demonstrating the remarkable fire resistance of redwood bark, which chars before it burns to form a protective ablative shield. The surrounding old-growth forest was logged in the 1950s, yet this specimen was spared for reasons unknown.\n\nFor more on coast redwoods, see the [Wikipedia article on Sequoia sempervirens](https://en.wikipedia.org/wiki/Sequoia_sempervirens).",
+      "description": "A coast redwood (*Sequoia sempervirens*) takes root in what is now Klamath, California — the tree that will one day stand 297 feet tall and be named the **Brotherhood Tree**.\n\nNow over 2,000 years old, the Brotherhood Tree is one of the oldest and largest living organisms in the world. It stands on the Forest Experience Trail at the Trees of Mystery attraction in Klamath, CA. The tree measures 19 feet in diameter, 60 feet in circumference, and 297 feet in height. It was named in hope for the *brotherhood of man* and as a symbol of resilience.\n\nThe tree's bark bears fire scars from an event approximately 500 years ago, demonstrating the remarkable fire resistance of redwood bark. The surrounding old-growth forest was logged in the 1950s, yet this specimen was spared.",
       "description_format": "markdown",
       "date_label": "circa 25 BCE (over 2,000 years ago)",
       "tags": [
-        "nature",
-        "botany",
-        "coast-redwood",
-        "sequoia-sempervirens",
-        "california",
-        "1000-year-project",
-        "living-landmark",
-        "deep-time"
+        "nature", "botany", "coast-redwood", "sequoia-sempervirens",
+        "california", "1000-year-project", "living-landmark", "deep-time"
+      ],
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Sequoia_sempervirens",
+          "title": "Wikipedia — Sequoia sempervirens (coast redwood)",
+          "type": "wikipedia"
+        },
+        {
+          "url": "https://treesofmystery.net/redwood-trees/",
+          "title": "Trees of Mystery — Brotherhood Tree",
+          "type": "official",
+          "description": "Official page featuring the Brotherhood Tree"
+        },
+        {
+          "url": "https://www.youtube.com/watch?v=UJJmY1CjkCo&t=93s",
+          "title": "Brotherhood Tree — Trees of Mystery (video)",
+          "type": "reference"
+        }
       ]
     },
     "temporal": {
@@ -73,29 +79,6 @@
         { "type": "cultural",    "value": 650 },
         { "type": "scientific",  "value": 700 }
       ]
-    },
-    "relations": [
-      {
-        "type": "related_to",
-        "target_url": "https://en.wikipedia.org/wiki/Sequoia_sempervirens",
-        "description": "Wikipedia: Sequoia sempervirens (coast redwood)",
-        "canon": "primary",
-        "bidirectional": false
-      },
-      {
-        "type": "related_to",
-        "target_url": "https://treesofmystery.net/redwood-trees/",
-        "description": "Trees of Mystery official page featuring the Brotherhood Tree",
-        "canon": "primary",
-        "bidirectional": false
-      },
-      {
-        "type": "related_to",
-        "target_url": "https://www.youtube.com/watch?v=UJJmY1CjkCo&t=93s",
-        "description": "Brotherhood Tree video — Trees of Mystery",
-        "canon": "primary",
-        "bidirectional": false
-      }
-    ]
+    }
   }
 }

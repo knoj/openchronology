@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OpenChronology Schema Registry</title>
+  <title>OpenChronology Schema Registry — v0.3</title>
   <meta name="description" content="Machine-readable JSON Schema files for the OpenChronology open standard. Validate .chron, .chroncal, .chronverse, .chronpkg, and .chronstream files.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -419,7 +419,7 @@
         <span class="sep">/</span>
         Schema Registry
       </a>
-      <span class="header-badge">v0.2 Pre-Release</span>
+      <span class="header-badge">v0.3 Pre-Release</span>
     </div>
   </header>
 
@@ -441,7 +441,7 @@
   <!-- Schemas -->
   <section id="schemas">
     <div class="container">
-      <div class="sec-label">v0.2 Schemas</div>
+      <div class="sec-label">v0.3 Schemas</div>
       <h2 class="sec-title">Published Schemas</h2>
       <p class="sec-intro">Six schemas covering all five file types. The core schema is the normative conformance floor; the full schema is its superset for complete validation.</p>
 
@@ -455,7 +455,7 @@
           <div class="schema-card-title">Core Event Schema</div>
           <p class="schema-card-desc">The minimum required structure for <code>.chron</code> files. This is the normative Tier 1 conformance floor — every conformant <code>.chron</code> file must be valid against this schema.</p>
           <div class="schema-card-validates">Validates <span>.chron</span> files — Tier 1 (Core)</div>
-          <a href="v0.2/core.schema.json" class="schema-card-link">View schema</a>
+          <a href="v0.3/core.schema.json" class="schema-card-link">View schema</a>
         </div>
 
         <div class="schema-card">
@@ -466,7 +466,7 @@
           <div class="schema-card-title">Full Event Schema</div>
           <p class="schema-card-desc">Complete validation for <code>.chron</code> files including all optional blocks — significance, recurrence, dynamic formulas, spatial data, and media. Required for Tier 3 (Full) implementations.</p>
           <div class="schema-card-validates">Validates <span>.chron</span> files — Tier 3 (Full)</div>
-          <a href="v0.2/full.schema.json" class="schema-card-link">View schema</a>
+          <a href="v0.3/full.schema.json" class="schema-card-link">View schema</a>
         </div>
 
         <div class="schema-card">
@@ -477,7 +477,7 @@
           <div class="schema-card-title">Calendar Definition Schema</div>
           <p class="schema-card-desc">Validates standalone <code>.chroncal</code> calendar definition files — epoch, linear or cyclic structure, month definitions, leap rules, and value format.</p>
           <div class="schema-card-validates">Validates <span>.chroncal</span> files</div>
-          <a href="v0.2/calendar.schema.json" class="schema-card-link">View schema</a>
+          <a href="v0.3/calendar.schema.json" class="schema-card-link">View schema</a>
         </div>
 
         <div class="schema-card">
@@ -488,7 +488,7 @@
           <div class="schema-card-title">Universe Definition Schema</div>
           <p class="schema-card-desc">Validates standalone <code>.chronverse</code> universe definition files — temporal anchoring, default calendar, canon scope declarations, and related universe references.</p>
           <div class="schema-card-validates">Validates <span>.chronverse</span> files</div>
-          <a href="v0.2/universe.schema.json" class="schema-card-link">View schema</a>
+          <a href="v0.3/universe.schema.json" class="schema-card-link">View schema</a>
         </div>
 
         <div class="schema-card">
@@ -499,7 +499,7 @@
           <div class="schema-card-title">Bundle Manifest Schema</div>
           <p class="schema-card-desc">Validates the <code>manifest.json</code> entry point descriptor inside <code>.chronpkg</code> ZIP bundle archives. Covers the event index, bundled calendars and universes, and asset configuration.</p>
           <div class="schema-card-validates">Validates <span>.chronpkg</span> manifest.json</div>
-          <a href="v0.2/manifest.schema.json" class="schema-card-link">View schema</a>
+          <a href="v0.3/manifest.schema.json" class="schema-card-link">View schema</a>
         </div>
 
         <div class="schema-card">
@@ -510,14 +510,14 @@
           <div class="schema-card-title">Stream Header Schema</div>
           <p class="schema-card-desc">Validates the header record (line 1) of <code>.chronstream</code> NDJSON files. The header declares the schema version, title, default universe and calendar, and optional definition maps.</p>
           <div class="schema-card-validates">Validates <span>.chronstream</span> header record</div>
-          <a href="v0.2/stream.schema.json" class="schema-card-link">View schema</a>
+          <a href="v0.3/stream.schema.json" class="schema-card-link">View schema</a>
         </div>
 
       </div>
 
       <div class="machine-block">
         <h3>Machine-Readable Registry Index</h3>
-        <p>A structured JSON index of all schemas, built-in vocabularies, MIME types, and versioning policy is available for tools and parsers at <a href="v0.2/index.json">schemas.openchronology.org/v0.2/index.json</a>. The root registry index — listing all spec versions — is at <a href="index.json">schemas.openchronology.org/index.json</a>.</p>
+        <p>A structured JSON index of all schemas, built-in vocabularies, MIME types, and versioning policy is available for tools and parsers at <a href="v0.3/index.json">schemas.openchronology.org/v0.3/index.json</a>. The root registry index — listing all spec versions — is at <a href="index.json">schemas.openchronology.org/index.json</a>.</p>
       </div>
     </div>
   </section>
@@ -533,7 +533,7 @@
       <pre style="background:var(--bg-surface); border:1px solid var(--border-sub); border-left:2px solid var(--gold-dim); padding:1.2rem 1.5rem; overflow-x:auto; margin-bottom:2rem; border-radius:0 2px 2px 0;"><code style="font-family:var(--ff-mono); font-size:0.78rem; color:var(--text-dim); background:none; padding:0; line-height:1.6;">{
   "meta": {
     "schema_version": "0.2",
-    "$schema": "https://schemas.openchronology.org/v0.2/core.schema.json",
+    "$schema": "https://schemas.openchronology.org/v0.3/core.schema.json",
     "canonical_url": "https://example.com/events/my-event.chron"
   },
   "event": {
@@ -551,7 +551,7 @@
     "id": "my-calendar",
     "version": "1.0.0",
     "display_name": "My Calendar",
-    "$schema": "https://schemas.openchronology.org/v0.2/calendar.schema.json"
+    "$schema": "https://schemas.openchronology.org/v0.3/calendar.schema.json"
   },
   "calendar": { ... }
 }</code></pre>
@@ -667,10 +667,10 @@
 
         <div class="version-entries">
           <div class="version-entry">
-            <div class="version-tag">v0.2</div>
+            <div class="version-tag">v0.3</div>
             <div class="version-detail">
-              <strong>Current pre-release.</strong> Complete schema set covering all five file types. Pre-release status — breaking changes possible before 1.0. Schemas will be finalized and marked stable at 1.0 release.
-              <br><a href="v0.2/index.json" style="margin-top:0.3rem; display:inline-block;">→ v0.2 index.json</a>
+              <strong>Current pre-release.</strong> Adds <code>content.sources</code> for external citations. Expands significance metrics vocabulary. Documents built-in bodies. Fixes <code>relations</code> to require <code>target_id</code>. Pre-release — breaking changes possible before 1.0.
+              <br><a href="v0.3/index.json" style="margin-top:0.3rem; display:inline-block;">→ v0.3 index.json</a>
             </div>
           </div>
           <div class="version-entry">
@@ -692,7 +692,7 @@
         <li><a href="https://openchronology.org/specification.html">Specification</a></li>
         <li><a href="https://github.com/knoj/openchronology">GitHub</a></li>
       </ul>
-      <div class="footer-meta">v0.2 Pre-Release · CC-BY-4.0</div>
+      <div class="footer-meta">v0.3 Pre-Release · CC-BY-4.0</div>
     </div>
   </footer>
 

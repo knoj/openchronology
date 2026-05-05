@@ -1,0 +1,279 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.openchronology.org/v0.3/index.json",
+  "title": "OpenChronology Schema Registry \u2014 v0.3",
+  "description": "Machine-readable index of all JSON Schemas published at this base URL.",
+  "openchronology": {
+    "spec_version": "0.3",
+    "spec_status": "pre-release",
+    "spec_url": "https://openchronology.org/specification.html",
+    "github": "https://github.com/knoj/openchronology",
+    "license": "CC-BY-4.0",
+    "base_url": "https://schemas.openchronology.org/v0.3/",
+    "published_at": "2026-05"
+  },
+  "schemas": [
+    {
+      "id": "core.schema.json",
+      "url": "https://schemas.openchronology.org/v0.3/core.schema.json",
+      "title": "Core Event Schema",
+      "validates": ".chron event files \u2014 minimum required structure",
+      "conformance_tier": "Core (Tier 1)",
+      "file_type": ".chron",
+      "mime_type": "application/vnd.openchronology+json"
+    },
+    {
+      "id": "full.schema.json",
+      "url": "https://schemas.openchronology.org/v0.3/full.schema.json",
+      "title": "Full Event Schema",
+      "validates": ".chron event files \u2014 complete structure",
+      "conformance_tier": "Full (Tier 3)",
+      "file_type": ".chron",
+      "mime_type": "application/vnd.openchronology+json",
+      "extends": "core.schema.json"
+    },
+    {
+      "id": "calendar.schema.json",
+      "url": "https://schemas.openchronology.org/v0.3/calendar.schema.json",
+      "title": "Calendar Definition Schema",
+      "validates": ".chroncal files",
+      "conformance_tier": "All tiers",
+      "file_type": ".chroncal",
+      "mime_type": "application/vnd.openchronology.calendar+json"
+    },
+    {
+      "id": "universe.schema.json",
+      "url": "https://schemas.openchronology.org/v0.3/universe.schema.json",
+      "title": "Universe Definition Schema",
+      "validates": ".chronverse files",
+      "conformance_tier": "All tiers",
+      "file_type": ".chronverse",
+      "mime_type": "application/vnd.openchronology.universe+json"
+    },
+    {
+      "id": "manifest.schema.json",
+      "url": "https://schemas.openchronology.org/v0.3/manifest.schema.json",
+      "title": "Bundle Manifest Schema",
+      "validates": ".chronpkg manifest.json",
+      "conformance_tier": "Full (Tier 3)",
+      "file_type": ".chronpkg",
+      "mime_type": "application/vnd.openchronology.package+zip"
+    },
+    {
+      "id": "stream.schema.json",
+      "url": "https://schemas.openchronology.org/v0.3/stream.schema.json",
+      "title": "Stream Header Schema",
+      "validates": ".chronstream header records",
+      "conformance_tier": "Full (Tier 3)",
+      "file_type": ".chronstream",
+      "mime_type": "application/vnd.openchronology.stream+ndjson"
+    }
+  ],
+  "changes_from_v02": [
+    "Added content.sources array for external citations (Wikipedia, official, academic, archive, news, reference, custom)",
+    "relations block now requires target_id \u2014 external URLs must use content.sources",
+    "Expanded significance.metrics.type enum: added religious, demographic, social, medical, ecological, technological",
+    "Built-in body identifiers (earth, moon, mars, sun) documented; definitions.bodies entries with type 'builtin' no longer require name field",
+    "Reconciled temporal_scope and geographic_scope vocabulary between spec and schemas"
+  ],
+  "builtin_calendars": [
+    {
+      "id": "gregorian",
+      "standard": "ISO 8601 / Proleptic Gregorian",
+      "value_format": "YYYY-MM-DD"
+    },
+    {
+      "id": "julian",
+      "standard": "Julian Calendar",
+      "value_format": "YYYY-MM-DD"
+    },
+    {
+      "id": "islamic",
+      "standard": "Islamic Hijri (civil)",
+      "value_format": "YYYY-MM-DD"
+    },
+    {
+      "id": "hebrew",
+      "standard": "Hebrew Calendar",
+      "value_format": "YYYY-MM-DD"
+    },
+    {
+      "id": "chinese",
+      "standard": "Chinese Lunisolar",
+      "value_format": "cycle-year-month-day"
+    },
+    {
+      "id": "unix",
+      "standard": "POSIX Epoch (seconds)",
+      "value_format": "Integer or decimal string"
+    },
+    {
+      "id": "jdn",
+      "standard": "Julian Day Number",
+      "value_format": "Decimal string"
+    }
+  ],
+  "builtin_universes": [
+    {
+      "id": "real",
+      "description": "The real world \u2014 SI seconds, absolute time. Never requires a fetch."
+    },
+    {
+      "id": "relative",
+      "description": "Generic relative universe. Requires inline anchor."
+    }
+  ],
+  "builtin_bodies": [
+    {
+      "id": "earth",
+      "description": "Earth \u2014 default body. crs: wgs84 recommended."
+    },
+    {
+      "id": "moon",
+      "description": "Earth's Moon."
+    },
+    {
+      "id": "mars",
+      "description": "Mars."
+    },
+    {
+      "id": "sun",
+      "description": "The Sun \u2014 for solar/heliocentric events."
+    }
+  ],
+  "source_type_vocabulary": [
+    "wikipedia",
+    "official",
+    "academic",
+    "archive",
+    "news",
+    "reference",
+    "custom"
+  ],
+  "relation_types": [
+    {
+      "type": "parent",
+      "category": "Hierarchical",
+      "implied_inverse": "child"
+    },
+    {
+      "type": "child",
+      "category": "Hierarchical",
+      "implied_inverse": "parent"
+    },
+    {
+      "type": "precedes",
+      "category": "Ordering",
+      "implied_inverse": "follows"
+    },
+    {
+      "type": "follows",
+      "category": "Ordering",
+      "implied_inverse": "precedes"
+    },
+    {
+      "type": "concurrent_with",
+      "category": "Ordering",
+      "implied_inverse": "self"
+    },
+    {
+      "type": "causes",
+      "category": "Causal",
+      "implied_inverse": "caused_by"
+    },
+    {
+      "type": "caused_by",
+      "category": "Causal",
+      "implied_inverse": "causes"
+    },
+    {
+      "type": "influences",
+      "category": "Causal",
+      "implied_inverse": "influenced_by"
+    },
+    {
+      "type": "influenced_by",
+      "category": "Causal",
+      "implied_inverse": "influences"
+    },
+    {
+      "type": "contains",
+      "category": "Spatial",
+      "implied_inverse": "contained_by"
+    },
+    {
+      "type": "contained_by",
+      "category": "Spatial",
+      "implied_inverse": "contains"
+    },
+    {
+      "type": "contradicts",
+      "category": "Continuity",
+      "implied_inverse": "self"
+    },
+    {
+      "type": "retcons",
+      "category": "Continuity",
+      "implied_inverse": "retconned_by"
+    },
+    {
+      "type": "retconned_by",
+      "category": "Continuity",
+      "implied_inverse": "retcons"
+    },
+    {
+      "type": "variant_of",
+      "category": "Continuity",
+      "implied_inverse": "self"
+    },
+    {
+      "type": "references",
+      "category": "References",
+      "implied_inverse": "referenced_by"
+    },
+    {
+      "type": "referenced_by",
+      "category": "References",
+      "implied_inverse": "references"
+    }
+  ],
+  "precision_vocabulary": [
+    "millisecond",
+    "second",
+    "minute",
+    "hour",
+    "day",
+    "month",
+    "year",
+    "decade",
+    "century",
+    "millennium",
+    "epoch",
+    "circa",
+    "custom"
+  ],
+  "canon_status_vocabulary": [
+    "canon",
+    "legends",
+    "disputed",
+    "non_canon",
+    "unknown"
+  ],
+  "metrics_type_vocabulary": [
+    "political",
+    "military",
+    "economic",
+    "cultural",
+    "scientific",
+    "technological",
+    "environmental",
+    "ecological",
+    "demographic",
+    "social",
+    "medical",
+    "religious",
+    "personal",
+    "narrative",
+    "custom"
+  ]
+}

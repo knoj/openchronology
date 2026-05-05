@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OpenChronology Specification v0.2</title>
-  <meta name="description" content="The OpenChronology Specification v0.2 — a platform-agnostic open standard for storing, sharing, and visualizing chronological data.">
+  <title>OpenChronology Specification v0.3</title>
+  <meta name="description" content="The OpenChronology Specification v0.3 — a platform-agnostic open standard for storing, sharing, and visualizing chronological data.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Spectral:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
@@ -508,7 +508,7 @@
           <li><a href="#s9">Conformance</a></li>
           <li><a href="https://github.com/knoj/openchronology">GitHub</a></li>
         </ul>
-        <span class="header-badge">v0.2 Pre-Release</span>
+        <span class="header-badge">v0.3 Pre-Release</span>
       </div>
     </div>
   </header>
@@ -545,6 +545,7 @@
         <li><a href="#s6">The Event Object</a></li>
         <ul class="toc-sub">
           <li><a href="#s6-1">Content &amp; Localization</a></li>
+          <li><a href="#s6-2">The sources Array</a></li>
           <li><a href="#s6-3">Temporal Data</a></li>
           <li><a href="#s6-4">Spatial Data</a></li>
           <li><a href="#s6-5">Media</a></li>
@@ -589,7 +590,7 @@
       <!-- Title block -->
       <div class="spec-title-block" id="intro">
         <div class="spec-eyebrow">OpenChronology Specification</div>
-        <h1 class="spec-title">Version 0.2</h1>
+        <h1 class="spec-title">Version 0.3</h1>
         <p class="spec-subtitle">Pre-Release Draft — May 2026</p>
         <div class="spec-meta-grid">
           <div class="spec-meta-item">
@@ -602,11 +603,11 @@
           </div>
           <div class="spec-meta-item">
             <div class="spec-meta-label">Schema Base URL</div>
-            <div class="spec-meta-value" style="font-size:0.68rem;">schemas.openchronology.org/v0.2/</div>
+            <div class="spec-meta-value" style="font-size:0.68rem;">schemas.openchronology.org/v0.3/</div>
           </div>
           <div class="spec-meta-item">
             <div class="spec-meta-label">Previous Version</div>
-            <div class="spec-meta-value">0.1 — Feb 2026</div>
+            <div class="spec-meta-value">0.2 — May 2026</div>
           </div>
           <div class="spec-meta-item">
             <div class="spec-meta-label">Maintainers</div>
@@ -711,12 +712,12 @@
         <p>A <code>.chron</code> file contains exactly one event. It is the atomic, portable unit of the OpenChronology ecosystem. The root object has three blocks: <code>meta</code>, <code>definitions</code>, and <code>event</code>.</p>
         <pre><code>{
   "meta": {
-    "schema_version": "0.2",
+    "schema_version": "0.3",
     "author": "String or Array (Optional)",
     "license": "String (Optional)",
     "generator": "String (Optional)",
     "canonical_url": "https://example.com/events/moon-landing.chron",
-    "$schema": "https://schemas.openchronology.org/v0.2/core.schema.json"
+    "$schema": "https://schemas.openchronology.org/v0.3/core.schema.json"
   },
   "definitions": {
     "universes": { ... },
@@ -773,7 +774,7 @@
     "version": "1.0.0",
     "display_name": "Star Wars Galaxy (Disney Canon)",
     "canonical_url": "https://example.com/universes/star-wars-disney.chronverse",
-    "$schema": "https://schemas.openchronology.org/v0.2/universe.schema.json"
+    "$schema": "https://schemas.openchronology.org/v0.3/universe.schema.json"
   },
   "universe": {
     "type": "relative",
@@ -840,10 +841,30 @@
   "description_format": "markdown",
   "date_label": "25th of Halimath, SR 1418",
   "tags": ["diplomacy", "fellowship"],
+  "sources": [
+    { "url": "https://en.wikipedia.org/wiki/Council_of_Elrond",
+      "title": "Wikipedia — Council of Elrond", "type": "wikipedia" }
+  ],
   "translations": {
     "fr": { "title": "Le Conseil d'Elrond", "date_label": "25 Halimath, SR 1418" }
   }
 }</code></pre>
+
+        <h3 class="sec-sub" id="s6-2">6.2 The sources Array</h3>
+        <p>The <code>sources</code> array is the correct location for external citations — Wikipedia articles, official pages, academic papers, archival sources, and any non-<code>.chron</code> URL. Every source requires <code>url</code>, <code>title</code>, and <code>type</code>. An optional <code>description</code> field annotates what the source covers.</p>
+        <table class="spec-table">
+          <thead><tr><th>type value</th><th>Use for</th></tr></thead>
+          <tbody>
+            <tr><td><code>wikipedia</code></td><td>Wikipedia articles</td></tr>
+            <tr><td><code>official</code></td><td>Official pages — NASA, museums, institutions</td></tr>
+            <tr><td><code>academic</code></td><td>Peer-reviewed papers, theses, scholarly publications</td></tr>
+            <tr><td><code>archive</code></td><td>Library or museum records, digitized primary documents</td></tr>
+            <tr><td><code>news</code></td><td>Journalism and news reporting</td></tr>
+            <tr><td><code>reference</code></td><td>General reference — encyclopedias, databases, videos</td></tr>
+            <tr><td><code>custom</code></td><td>User-defined — populate <code>description</code></td></tr>
+          </tbody>
+        </table>
+        <div class="callout callout-warn"><div class="callout-label">Important</div>The <code>relations</code> block is exclusively for links between <code>.chron</code> event files. Placing external URLs (Wikipedia, NASA, etc.) in <code>relations</code> is a schema violation in v0.3. Use <code>content.sources</code> for all external citations.</div>
 
         <h3 class="sec-sub" id="s6-3">6.3 Temporal Data</h3>
         <p>The <code>temporal</code> block is the computational engine for date resolution. <code>start_value</code> and <code>end_value</code> are calendar-native strings — opaque to parsers until the calendar is resolved. <code>precision</code> expresses confidence: <code>millisecond</code> through <code>epoch</code>, plus <code>circa</code> (which should always pair with an <code>uncertainty</code> block) and <code>custom</code>.</p>
@@ -851,13 +872,15 @@
         <div class="callout callout-warn"><div class="callout-label">Important</div>Renderers MUST NEVER use <code>start_value</code> or <code>end_value</code> raw strings as display text. Display date resolution priority: (1) translation <code>date_label</code>, (2) base <code>date_label</code>, (3) <code>format_hint</code> auto-format, (4) renderer default.</div>
 
         <h3 class="sec-sub" id="s6-4">6.4 Spatial Data</h3>
-        <p>Coordinates follow GeoJSON order: <code>[longitude, latitude, altitude]</code>. Geometry types: <code>Point</code>, <code>Polygon</code>, <code>LineString</code>. The <code>body</code> field references a definition in <code>definitions.bodies</code> — enabling non-Earth spatial contexts.</p>
+        <p>Coordinates follow GeoJSON order: <code>[longitude, latitude, altitude]</code>. Geometry types: <code>Point</code>, <code>Polygon</code>, <code>LineString</code>. The <code>body</code> field references a body identifier — either a built-in or a definition in <code>definitions.bodies</code>.</p>
+        <p>Built-in body identifiers require no definitions entry: <code>earth</code> (default, WGS84), <code>moon</code>, <code>mars</code>, <code>sun</code>. For custom or fictional bodies, declare a full definition with <code>name</code>, <code>type</code>, and optional <code>crs</code>, <code>image_url</code>, <code>width</code>, <code>height</code>.</p>
 
         <h3 class="sec-sub" id="s6-5">6.5 Media</h3>
         <p>Media items carry a <code>type</code> (<code>video</code>, <code>audio</code>, <code>image</code>, <code>document</code>), a <code>url</code>, and an <code>alt</code> field required for accessibility-compliant renderers. Inside a <code>.chronpkg</code>, asset URLs MAY use the <code>chronpkg://</code> scheme. Parsers encountering <code>chronpkg://</code> URLs outside a bundle context MUST NOT throw a fatal error.</p>
 
         <h3 class="sec-sub" id="s6-7">6.7 Relations</h3>
-        <p>Relations are <strong>Weak References</strong>. If the target UUID is not present in the current dataset, the parser MUST soft-fail — retaining the relation object and rendering the event normally. The <code>target_url</code> field carries the <code>canonical_url</code> of the target <code>.chron</code> file for cross-file resolution.</p>
+        <p>Relations are <strong>Weak References between <code>.chron</code> event files</strong>. Every relation requires a <code>target_id</code> — the UUID of the target event. If the target UUID is not present in the current dataset, the parser MUST soft-fail. The <code>target_url</code> field carries the <code>canonical_url</code> of the target <code>.chron</code> file for cross-file resolution.</p>
+        <div class="callout callout-note"><div class="callout-label">Note</div>Relations are for inter-<code>.chron</code> links only. For external citations (Wikipedia, official pages, papers), use <code>content.sources</code> (§6.2).</div>
         <table class="spec-table">
           <thead><tr><th>Category</th><th>Types</th></tr></thead>
           <tbody>
@@ -872,8 +895,8 @@
         <p>The optional <code>canon</code> object carries a <code>scope</code> (universe-defined) and a <code>status</code>: <code>canon</code>, <code>legends</code>, <code>disputed</code>, <code>non_canon</code>, or <code>unknown</code>.</p>
 
         <h3 class="sec-sub" id="s6-8">6.8 Significance</h3>
-        <p>The significance block drives <strong>Level of Detail (LOD) rendering</strong> — which events appear at which zoom level. Analogous to Google Maps showing country names when zoomed out and restaurants when zoomed in. Events without a significance block are always visible at all zoom levels.</p>
-        <p><code>value</code> is a 0–1000 score. <code>temporal_scope</code> ranges from <code>epochal</code> through <code>hourly</code>. <code>geographic_scope</code> ranges from <code>global</code> through <code>street</code>. Per-domain metrics support types: <code>political</code>, <code>military</code>, <code>economic</code>, <code>cultural</code>, <code>scientific</code>, <code>environmental</code>, <code>personal</code>, <code>narrative</code>, <code>custom</code>.</p>
+        <p>The significance block drives <strong>Level of Detail (LOD) rendering</strong> — which events appear at which zoom level. Events without a significance block are always visible at all zoom levels.</p>
+        <p><code>value</code> is a 0–1000 score. <code>temporal_scope</code> ranges from <code>epochal</code> through <code>hourly</code>. <code>geographic_scope</code> ranges from <code>global</code> through <code>street</code>. Per-domain metrics support these types: <code>political</code>, <code>military</code>, <code>economic</code>, <code>cultural</code>, <code>scientific</code>, <code>technological</code>, <code>environmental</code>, <code>ecological</code>, <code>demographic</code>, <code>social</code>, <code>medical</code>, <code>religious</code>, <code>personal</code>, <code>narrative</code>, <code>custom</code>.</p>
 
         <h3 class="sec-sub" id="s6-9">6.9 Recurrence</h3>
         <p>Optional. Absence means the event occurs exactly once. <code>frequency.unit</code> values: <code>day</code>, <code>week</code>, <code>month</code>, <code>year</code>, <code>custom</code> — with meaning delegated to the declared calendar. <code>end.type</code>: <code>count</code> (N total occurrences), <code>until</code> (calendar-native end date), or <code>none</code> (perpetual — renderers MUST NOT eagerly expand). Individual instances may be cancelled or modified via the <code>exceptions</code> array.</p>
@@ -1004,7 +1027,7 @@
         </div>
 
         <h3 class="sec-sub" id="s9-3">9.3 JSON Schema Registry</h3>
-        <p>Machine-readable JSON Schemas (draft/2020-12) are published at <a href="https://schemas.openchronology.org/v0.2/">schemas.openchronology.org/v0.2/</a>:</p>
+        <p>Machine-readable JSON Schemas (draft/2020-12) are published at <a href="https://schemas.openchronology.org/v0.3/">schemas.openchronology.org/v0.3/</a>:</p>
         <div class="schema-row">
           <div class="schema-item"><span class="schema-file">core.schema.json</span><span class="schema-desc">Minimum required structure of a .chron file. The Tier 1 normative conformance floor.</span></div>
           <div class="schema-item"><span class="schema-file">full.schema.json</span><span class="schema-desc">Complete .chron validation including all optional blocks. Required for Tier 3.</span></div>
@@ -1044,7 +1067,13 @@
             <tr>
               <td><code>0.2</code></td>
               <td>May 2026</td>
-              <td>Complete architectural restructuring. Document-per-event model. New .chronverse file. .chroncal renamed. .chronpkg and .chronstream redefined. Conformance tiers updated. RFC 2119 language adopted. Schema registry live.</td>
+              <td>Complete architectural restructuring. Document-per-event model. New .chronverse file. .chroncal renamed. .chronpkg and .chronstream redefined. Conformance tiers updated. RFC 2119 language adopted. Schema registry live at schemas.openchronology.org/v0.2/.</td>
+            </tr>
+            <tr>
+              <td><code>0.3</code></td>
+              <td>May 2026</td>
+              <td>Added <code>content.sources</code> array for external citations — replaces incorrect use of <code>relations</code> for external URLs. <code>relations</code> now requires <code>target_id</code> and is reserved for inter-.chron links only. Expanded <code>significance.metrics.type</code> enum (added religious, demographic, social, medical, ecological, technological). Documented built-in body identifiers (earth, moon, mars, sun). Reconciled temporal_scope and geographic_scope vocabulary with schemas. Schema registry updated at schemas.openchronology.org/v0.3/.</td>
+            </tr>
             </tr>
           </tbody>
         </table>
@@ -1061,7 +1090,7 @@
       <li><a href="https://github.com/knoj/openchronology">GitHub</a></li>
       <li><a href="https://1000yearproject.org">1000 Year Project</a></li>
     </ul>
-    <div class="footer-meta">v0.2 Pre-Release · CC-BY-4.0</div>
+    <div class="footer-meta">v0.3 Pre-Release · CC-BY-4.0</div>
   </footer>
 
   <script>
