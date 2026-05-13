@@ -1,16 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OpenChronology Specification v0.3</title>
-  <meta name="description" content="The OpenChronology Specification v0.3 — a platform-agnostic open standard for storing, sharing, and visualizing chronological data.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300;1,8..60,400&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
-  <style>
-
+<?php
+$page_title = 'OpenChronology Specification v0.3';
+$page_desc  = 'The OpenChronology Specification v0.3 — a platform-agnostic open standard for storing, sharing, and visualizing chronological data.';
+$page_url   = 'https://openchronology.org/specification.php';
+$active_nav = 'specification';
+$page_head  = '
+<style>
     /* ─── Layout ──────────────────────────── */
     :root { --sidebar-w: 256px; }
 
@@ -107,7 +101,7 @@
       margin-bottom: 0.8rem;
       display: flex; align-items: center; gap: 0.6rem;
     }
-    .spec-eyebrow::before { content: ''; width: 20px; height: 1px; background: var(--blue); }
+    .spec-eyebrow::before { content: \'\'; width: 20px; height: 1px; background: var(--blue); }
     .spec-title {
       font-family: var(--font-serif);
       font-size: clamp(28px, 4vw, 40px);
@@ -154,7 +148,7 @@
       margin-bottom: 0.5rem;
       display: flex; align-items: center; gap: 0.5rem;
     }
-    .sec-label::before { content: ''; width: 16px; height: 1px; background: var(--blue); }
+    .sec-label::before { content: \'\'; width: 16px; height: 1px; background: var(--blue); }
     h2.sec-title {
       font-family: var(--font-serif);
       font-size: clamp(22px, 3vw, 28px);
@@ -317,35 +311,9 @@
       .schema-item { flex-direction: column; gap: 4px; }
       .schema-file { min-width: auto; }
     }
-  </style>
-</head>
-<body>
-
-  <!-- ── Navigation ─────────────────────────── -->
-  <nav class="site-nav">
-    <div class="nav-inner">
-      <a href="index.html" class="nav-brand">
-        <span class="nav-brand-dot"></span>
-        OpenChronology
-      </a>
-      <ul class="nav-links">
-        <li><a href="#s1" class="active">Introduction</a></li>
-        <li><a href="#s6">Event Object</a></li>
-        <li><a href="#s9">Conformance</a></li>
-        <li><a href="https://openchronology.org/ai-guide.html">AI Guide</a></li>
-        <li><a href="https://github.com/knoj/openchronology">GitHub</a></li>
-        <li><a href="https://chronology.studio" class="nav-studio-link">chronology.studio</a></li>
-      </ul>
-      <span class="spec-badge spec-badge--draft" style="margin-left:8px;">v0.3 Pre-Release</span>
-      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-          <line x1="3" y1="6"  x2="17" y2="6"/>
-          <line x1="3" y1="10" x2="17" y2="10"/>
-          <line x1="3" y1="14" x2="17" y2="14"/>
-        </svg>
-      </button>
-    </div>
-  </nav>
+</style>';
+include $_SERVER['DOCUMENT_ROOT'] . '/partials/header.php';
+?>
 
   <div class="page-layout">
 
@@ -917,7 +885,7 @@
         <p>Non-normative. Implementations are free to store event data in any manner. This schema is provided as a reference for developers building relational database backends. Designed for SQLite, PostgreSQL, and MySQL compatibility.</p>
         <p>Design principles: the full event JSON blob is stored in a <code>data</code> column for complete fidelity; indexed columns are projections of frequently-queried fields; temporal values are stored as both calendar-native strings and resolved Unix timestamps; tombstone records MUST be retained — never hard-deleted.</p>
         <p>The advisory SQL schema covers seven tables — <code>events</code>, <code>packages</code>, <code>event_relations</code>, <code>event_metrics</code>, <code>event_media</code>, <code>calendars</code>, and <code>universes</code> — with indexes, a tombstone-safe upsert pattern, and example queries.</p>
-        <p style="margin-top:1.2rem;"><a href="sql-schema.html">→ View the Advisory SQL Schema</a></p>
+        <p style="margin-top:1.2rem;"><a href="sql-schema.php">→ View the Advisory SQL Schema</a></p>
       </section>
 
       <div class="sec-divider"></div>
@@ -953,20 +921,6 @@
     </main>
   </div>
 
-  <!-- ── Footer ─────────────────────────────── -->
-  <footer class="spec-footer">
-    <div class="spec-footer-inner">
-      <span class="spec-footer-brand">OpenChronology</span>
-      <ul class="spec-footer-links">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="https://schemas.openchronology.org">Schemas</a></li>
-        <li><a href="https://github.com/knoj/openchronology">GitHub</a></li>
-        <li><a href="https://1000yearproject.org">1000 Year Project</a></li>
-      </ul>
-      <span class="spec-footer-meta">v0.3 Pre-Release · CC-BY-4.0</span>
-    </div>
-  </footer>
-
   <script>
     // Mobile nav toggle
     const toggle = document.querySelector('.nav-toggle');
@@ -992,5 +946,5 @@
     }, { rootMargin: '-54px 0px -60% 0px' });
     sections.forEach(s => observer.observe(s));
   </script>
-</body>
-</html>
+
+<?php include $_SERVER['DOCUMENT_ROOT'] . '/partials/footer.php'; ?>

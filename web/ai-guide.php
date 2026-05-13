@@ -1,44 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>What to Give Your AI Chatbot — OpenChronology</title>
-<meta name="description" content="Prime any AI chatbot with the OpenChronology spec and start generating valid .chron files or building your own timeline viewer in seconds.">
-<meta property="og:title" content="What to Give Your AI Chatbot — OpenChronology">
-<meta property="og:description" content="A ready-made context block and prompt guide for creating .chron files or building a timeline viewer with any AI assistant.">
-<meta property="og:url" content="https://openchronology.org/ai-guide.html">
-<meta property="og:type" content="article">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300;1,8..60,400&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
-
-<!-- ═══ NAV ═══════════════════════════════════════════════════════════════ -->
-<nav class="site-nav" aria-label="Site navigation">
-  <div class="nav-inner">
-    <a href="/" class="nav-brand">
-      <span class="nav-brand-dot" aria-hidden="true"></span>
-      OpenChronology
-    </a>
-    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-        <line x1="3" y1="6"  x2="21" y2="6"/>
-        <line x1="3" y1="12" x2="21" y2="12"/>
-        <line x1="3" y1="18" x2="21" y2="18"/>
-      </svg>
-    </button>
-    <ul class="nav-links" id="navLinks">
-      <li><a href="/specification.html">Specification</a></li>
-      <li><a href="https://schemas.openchronology.org" target="_blank" rel="noopener">Schemas</a></li>
-      <li><a href="/libraries.html">Libraries</a></li>
-      <li><a href="/working-group.html">Working Group</a></li>
-      <li><a href="https://chronology.studio" target="_blank" rel="noopener" class="nav-studio-link">Chronology Studio &#8594;</a></li>
-    </ul>
-  </div>
-</nav>
+<?php
+$page_title = 'AI Use Guide — OpenChronology';
+$page_desc  = 'Guide to providing your AI with the prompts to implement the OpenChronology standard in your site or application.';
+$page_url   = 'https://openchronology.org/ai-guide.php';
+$active_nav = 'ai-guide';
+include $_SERVER['DOCUMENT_ROOT'] . '/partials/header.php';
+?>
 
 
 <!-- ═══ PAGE HEADER ═══════════════════════════════════════════════════════ -->
@@ -566,7 +532,7 @@ VALIDATION AND TOOLS
         </div>
         <p class="tip-text"><strong>Always validate generated files.</strong>
           Drop each file into the
-          <a href="https://chronology.studio/tools/validator.html" target="_blank" rel="noopener">Validator</a>
+          <a href="https://chronology.studio/tools/validator.php" target="_blank" rel="noopener">Validator</a>
           at Chronology Studio. It catches missing fields and malformed UUIDs instantly.</p>
       </div>
 
@@ -625,7 +591,7 @@ VALIDATION AND TOOLS
         Everything runs in your browser &#8212; nothing is uploaded to a server.
       </p>
       <div class="next-grid">
-        <a href="https://chronology.studio/tools/validator.html" class="next-card" target="_blank" rel="noopener">
+        <a href="https://chronology.studio/tools/validator.php" class="next-card" target="_blank" rel="noopener">
           <div class="next-card-num">01 &#8212; Validate</div>
           <div class="next-card-title">Validator &amp; Upgrader</div>
           <p class="next-card-desc">Drag in your files for instant schema validation. Catches errors before they reach a viewer.</p>
@@ -635,7 +601,7 @@ VALIDATION AND TOOLS
           <div class="next-card-title">Timeline Viewer Gallery</div>
           <p class="next-card-desc">Four rendering styles &#8212; Horizon, Codex, Ledger, Gantt. Drop your files in and see them rendered immediately.</p>
         </a>
-        <a href="https://chronology.studio/tools/event-author.html" class="next-card" target="_blank" rel="noopener">
+        <a href="https://chronology.studio/tools/event-author.php" class="next-card" target="_blank" rel="noopener">
           <div class="next-card-num">03 &#8212; Refine</div>
           <div class="next-card-title">Event Author</div>
           <p class="next-card-desc">Import any <code>.chron</code> file to edit fields, adjust significance, and re-export &#8212; no JSON editing required.</p>
@@ -689,31 +655,6 @@ VALIDATION AND TOOLS
 
 </main>
 
-
-<!-- ═══ FOOTER ════════════════════════════════════════════════════════════ -->
-<footer class="site-footer">
-  <div class="footer-inner">
-    <div>
-      <a href="/" class="footer-brand">
-        <span class="footer-brand-dot" aria-hidden="true"></span>
-        OpenChronology
-      </a>
-      <p class="footer-tagline">An open standard for chronological data.<br>CC-BY-4.0 &nbsp;&#183;&nbsp; Spec v0.3 Pre-Release</p>
-    </div>
-    <ul class="footer-links">
-      <li><a href="/specification.html">Specification</a></li>
-      <li><a href="https://schemas.openchronology.org" target="_blank" rel="noopener">Schemas</a></li>
-      <li><a href="/working-group.html">Working Group</a></li>
-      <li><a href="https://chronology.studio" target="_blank" rel="noopener">Chronology Studio</a></li>
-      <li><a href="https://github.com/knoj/openchronology" target="_blank" rel="noopener">GitHub</a></li>
-    </ul>
-    <p class="footer-copy">
-      OpenChronology is an open standard published under the Creative Commons Attribution 4.0 International License.
-      The 1000 Year Project is an anchor project of OpenChronology &#8212;
-      <a href="https://1000yearproject.org" target="_blank" rel="noopener" style="color:rgba(255,255,255,0.4)">1000yearproject.org</a>
-    </p>
-  </div>
-</footer>
 
 
 <script>
@@ -769,5 +710,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-</body>
-</html>
+<?php include $_SERVER['DOCUMENT_ROOT'] . '/partials/footer.php'; ?>

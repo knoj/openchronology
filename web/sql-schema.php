@@ -1,16 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Advisory SQL Schema — OpenChronology Specification v0.3</title>
-  <meta name="description" content="Non-normative advisory SQL schema for OpenChronology implementations using relational database backends. Covers SQLite, PostgreSQL, and MySQL.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300;1,8..60,400&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
-  <style>
-
+<?php
+$page_title = 'Advisory SQL Schema — OpenChronology Specification v0.3';
+$page_desc  = 'Advisory SQL Schema for use in an OpenChronology implementation where .chron files are stored in a database.';
+$page_url   = 'https://openchronology.org/sql-schema.php';
+$active_nav = '';
+$page_head  = '
+<style>
     /* ─── Layout ──────────────────────────── */
     :root { --sidebar-w: 256px; }
 
@@ -95,7 +89,7 @@
       margin-bottom: 0.8rem;
       display: flex; align-items: center; gap: 0.6rem;
     }
-    .spec-eyebrow::before { content: ''; width: 20px; height: 1px; background: var(--blue); }
+    .spec-eyebrow::before { content: \'\'; width: 20px; height: 1px; background: var(--blue); }
     .spec-title {
       font-family: var(--font-serif);
       font-size: clamp(28px, 4vw, 40px);
@@ -124,7 +118,7 @@
       margin-bottom: 0.5rem;
       display: flex; align-items: center; gap: 0.5rem;
     }
-    .sec-label::before { content: ''; width: 16px; height: 1px; background: var(--blue); }
+    .sec-label::before { content: \'\'; width: 16px; height: 1px; background: var(--blue); }
     h2.sec-title {
       font-family: var(--font-serif);
       font-size: clamp(22px, 3vw, 28px);
@@ -202,34 +196,9 @@
     @media (max-width: 700px) {
       .spec-content { padding: 1.5rem var(--space-md) 4rem; }
     }
-  </style>
-</head>
-<body>
-
-  <!-- ── Navigation ─────────────────────────── -->
-  <nav class="site-nav">
-    <div class="nav-inner">
-      <a href="index.html" class="nav-brand">
-        <span class="nav-brand-dot"></span>
-        OpenChronology
-      </a>
-      <ul class="nav-links">
-        <li><a href="specification.html">Specification</a></li>
-        <li><a href="#design" class="active">SQL Schema</a></li>
-        <li><a href="https://openchronology.org/ai-guide.html">AI Guide</a></li>
-        <li><a href="https://github.com/knoj/openchronology">GitHub</a></li>
-        <li><a href="https://chronology.studio" class="nav-studio-link">chronology.studio</a></li>
-      </ul>
-      <span class="spec-badge spec-badge--draft" style="margin-left:8px;">Appendix A</span>
-      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-          <line x1="3" y1="6"  x2="17" y2="6"/>
-          <line x1="3" y1="10" x2="17" y2="10"/>
-          <line x1="3" y1="14" x2="17" y2="14"/>
-        </svg>
-      </button>
-    </div>
-  </nav>
+</style>';
+include $_SERVER['DOCUMENT_ROOT'] . '/partials/header.php';
+?>
 
   <div class="page-layout">
 
@@ -251,7 +220,7 @@
         <li><a href="#queries">Example Queries</a></li>
       </ul>
       <div class="toc-back">
-        <a href="specification.html">
+        <a href="specification.php">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="7,2 3,6 7,10"/></svg>
           Back to Specification
         </a>
@@ -457,19 +426,6 @@
     </main>
   </div>
 
-  <!-- ── Footer ─────────────────────────────── -->
-  <footer class="spec-footer">
-    <div class="spec-footer-inner">
-      <div class="spec-footer-brand">OpenChronology</div>
-      <ul class="spec-footer-links">
-        <li><a href="specification.html">Specification</a></li>
-        <li><a href="https://schemas.openchronology.org">Schemas</a></li>
-        <li><a href="https://github.com/knoj/openchronology">GitHub</a></li>
-      </ul>
-      <div class="spec-footer-meta">Appendix A · Non-Normative · v0.3</div>
-    </div>
-  </footer>
-
   <script>
     // Mobile nav toggle
     const navToggle = document.querySelector('.nav-toggle');
@@ -501,5 +457,5 @@
     }, { rootMargin: '-54px 0px -60% 0px' });
     sections.forEach(s => observer.observe(s));
   </script>
-</body>
-</html>
+
+<?php include $_SERVER['DOCUMENT_ROOT'] . '/partials/footer.php'; ?>

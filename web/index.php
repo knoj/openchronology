@@ -1,18 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OpenChronology — A Standard for Time</title>
-  <meta name="description" content="OpenChronology is a platform-agnostic open standard for storing, sharing, and visualizing chronological data — from geological deep time to fictional universes.">
-  <meta property="og:title" content="OpenChronology — A Standard for Time">
-  <meta property="og:description" content="A platform-agnostic open standard for chronological data. One language for history, science, fiction, and everything in between.">
-  <meta property="og:url" content="https://openchronology.org">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300;1,8..60,400&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
-  <style>
+<?php
+$page_title = 'OpenChronology, an open timeline and event standard — OpenChronology';
+$page_desc  = 'OpenChronology is an open timeline and event standard supporting real-world time and location as well as fictional universes and calendars.';
+$page_url   = 'https://openchronology.org/index.php';
+$active_nav = '';
+$page_head  = '
+<style>
 
     /* ─── Shared section container ─────────── */
     .container {
@@ -47,7 +39,7 @@
       position: relative;
     }
     .hero-timeline::before {
-      content: '';
+      content: \'\';
       position: absolute;
       left: var(--space-lg); right: var(--space-lg);
       top: calc(50% + 4px);
@@ -329,34 +321,11 @@
     @media (max-width: 400px) {
       .what-pillars { grid-template-columns: 1fr; }
     }
-  </style>
-</head>
-<body>
+</style>';
+include $_SERVER['DOCUMENT_ROOT'] . '/partials/header.php';
+?>
 
-  <!-- ── Navigation ─────────────────────────── -->
-  <nav class="site-nav">
-    <div class="nav-inner">
-      <a href="index.html" class="nav-brand">
-        <span class="nav-brand-dot"></span>
-        OpenChronology
-      </a>
-      <ul class="nav-links">
-        <li><a href="specification.html">Specification</a></li>
-        <li><a href="#formats">File Family</a></li>
-        <li><a href="https://schemas.openchronology.org">Schemas</a></li>
-        <li><a href="ai-guide.html">AI Guide</a></li>
-        <li><a href="https://github.com/knoj/openchronology">GitHub</a></li>
-        <li><a href="https://chronology.studio" class="nav-studio-link">chronology.studio</a></li>
-      </ul>
-      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-          <line x1="3" y1="6"  x2="17" y2="6"/>
-          <line x1="3" y1="10" x2="17" y2="10"/>
-          <line x1="3" y1="14" x2="17" y2="14"/>
-        </svg>
-      </button>
-    </div>
-  </nav>
+
 
   <!-- ── Hero ───────────────────────────────── -->
   <header class="page-header page-header--hero">
@@ -375,7 +344,7 @@
         scientific observation, and project management.
       </p>
       <div class="hero-actions animate-fade-up delay-4">
-        <a href="specification.html" class="btn btn--blue">Read the Specification</a>
+        <a href="specification.php" class="btn btn--blue">Read the Specification</a>
         <a href="https://schemas.openchronology.org" class="btn btn--secondary">Schema Registry</a>
         <a href="https://1000yearproject.org" class="btn btn--secondary">The 1000 Year Project</a>
       </div>
@@ -773,27 +742,6 @@
     </div>
   </div>
 
-  <!-- ── Footer ─────────────────────────────── -->
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <div>
-        <a href="index.html" class="footer-brand">
-          <span class="footer-brand-dot"></span>
-          OpenChronology
-        </a>
-        <p class="footer-tagline">A platform-agnostic open standard for chronological data.</p>
-      </div>
-      <nav class="footer-links" aria-label="Footer navigation">
-        <a href="specification.html">Specification</a>
-        <a href="https://schemas.openchronology.org">Schemas</a>
-        <a href="https://github.com/knoj/openchronology">GitHub</a>
-        <a href="https://1000yearproject.org">1000 Year Project</a>
-        <a href="https://chronology.studio">chronology.studio</a>
-      </nav>
-      <p class="footer-copy">v0.3 Pre-Release · CC-BY-4.0 · openchronology.org</p>
-    </div>
-  </footer>
-
   <script>
     // Mobile nav toggle
     const toggle = document.querySelector('.nav-toggle');
@@ -811,5 +759,5 @@
       });
     }
   </script>
-</body>
-</html>
+
+<?php include $_SERVER['DOCUMENT_ROOT'] . '/partials/footer.php'; ?>
