@@ -7,443 +7,290 @@
   <meta name="description" content="Machine-readable JSON Schema files for the OpenChronology open standard. Validate .chron, .chroncal, .chronverse, .chronpkg, and .chronstream files.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Spectral:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300;1,8..60,400&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --bg:         #080b12;
-      --bg-surface: #0d1120;
-      --bg-card:    #111826;
-      --gold:       #c8a45a;
-      --gold-dim:   #8a6e35;
-      --gold-glow:  rgba(200,164,90,0.1);
-      --teal:       #4a9fa8;
-      --teal-dim:   rgba(74,159,168,0.15);
-      --text:       #ddd8cc;
-      --text-dim:   #8a8880;
-      --text-faint: #3d3f48;
-      --border:     rgba(200,164,90,0.15);
-      --border-sub: rgba(255,255,255,0.05);
-      --ff-display: 'Cormorant Garamond', Georgia, serif;
-      --ff-body:    'Spectral', Georgia, serif;
-      --ff-mono:    'JetBrains Mono', monospace;
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--ff-body);
-      font-size: 17px;
-      line-height: 1.75;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 1000;
-      opacity: 0.35;
-    }
-
-    a { color: var(--gold); text-decoration: none; }
-    a:hover { text-decoration: underline; text-underline-offset: 3px; }
-    code {
-      font-family: var(--ff-mono);
-      font-size: 0.8em;
-      color: var(--teal);
-      background: var(--teal-dim);
-      padding: 0.1em 0.4em;
-      border-radius: 3px;
-    }
-
-    /* ── Header ───────────────────────────────────────────────── */
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(8,11,18,0.95);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border-sub);
-      padding: 1.1rem 0;
-    }
-    .header-inner {
-      max-width: 1100px;
+    /* ─── Page wrap ───────────────────────── */
+    .page-wrap {
+      max-width: var(--wrap-wide);
       margin: 0 auto;
-      padding: 0 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .header-logo {
-      font-family: var(--ff-display);
-      font-size: 1.2rem;
-      font-weight: 500;
-      color: var(--text);
-      letter-spacing: 0.02em;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-    .header-logo strong { color: var(--text); font-weight: 500; }
-    .header-logo .sep { color: var(--text-faint); margin: 0 0.3rem; font-weight: 300; }
-    .logo-mark {
-      width: 28px; height: 28px;
-      border: 1.5px solid var(--gold);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      position: relative;
-      flex-shrink: 0;
-    }
-    .logo-mark::before {
-      content: '';
-      width: 8px; height: 8px;
-      background: var(--gold);
-      border-radius: 50%;
-    }
-    .logo-mark::after {
-      content: '';
-      position: absolute;
-      width: 18px; height: 1px;
-      background: var(--gold);
-      opacity: 0.5;
-    }
-    .header-badge {
-      font-family: var(--ff-mono);
-      font-size: 0.6rem;
-      letter-spacing: 0.1em;
-      color: var(--gold-dim);
-      border: 1px solid var(--gold-dim);
-      padding: 0.2em 0.6em;
-      border-radius: 2px;
+      padding: 0 var(--space-lg);
     }
 
-    /* ── Layout ───────────────────────────────────────────────── */
-    .container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
-    section { padding: 5rem 0; }
-    section + section { border-top: 1px solid var(--border-sub); padding-top: 4rem; }
+    /* ─── Sections ────────────────────────── */
+    .reg-section {
+      padding: 5rem 0;
+      border-top: 1px solid var(--border);
+    }
+    .reg-section:first-of-type { border-top: none; }
 
-    /* ── Section labels ───────────────────────────────────────── */
-    .sec-label {
-      font-family: var(--ff-mono);
-      font-size: 0.62rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--gold-dim);
-      margin-bottom: 0.6rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+    .reg-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 10px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--blue);
+      margin-bottom: 0.5rem;
+      display: flex; align-items: center; gap: 0.5rem;
     }
-    .sec-label::before { content: ''; width: 16px; height: 1px; background: var(--gold-dim); }
-    h2.sec-title {
-      font-family: var(--ff-display);
-      font-size: 2.2rem;
-      font-weight: 300;
-      color: #f0ece3;
-      line-height: 1.15;
-      margin-bottom: 1rem;
-    }
-    p.sec-intro {
-      font-size: 1rem;
-      font-weight: 300;
-      color: var(--text-dim);
-      max-width: 640px;
-      margin-bottom: 3rem;
-    }
+    .reg-eyebrow::before { content: ''; width: 16px; height: 1px; background: var(--blue); }
 
-    /* ── Hero ─────────────────────────────────────────────────── */
-    .hero {
-      padding: 6rem 0 5rem;
-      position: relative;
-      overflow: hidden;
-      border-bottom: 1px solid var(--border);
+    h2.reg-title {
+      font-family: var(--font-serif);
+      font-size: clamp(22px, 3vw, 30px);
+      font-weight: 400; color: var(--navy);
+      margin-bottom: 0.8rem; margin-top: 0;
     }
-    .hero-bg {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse 70% 50% at 80% 50%, rgba(74,159,168,0.05) 0%, transparent 60%);
-      pointer-events: none;
-    }
-    .hero-eyebrow {
-      font-family: var(--ff-mono);
-      font-size: 0.65rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--teal);
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-    .hero-eyebrow::before { content: ''; width: 20px; height: 1px; background: var(--teal); }
-    .hero-title {
-      font-family: var(--ff-display);
-      font-size: clamp(2.5rem, 6vw, 4rem);
-      font-weight: 300;
-      color: #f0ece3;
-      line-height: 1.1;
-      margin-bottom: 1rem;
-    }
-    .hero-sub {
-      font-family: var(--ff-display);
-      font-style: italic;
-      font-size: 1.2rem;
-      color: var(--text-dim);
-      margin-bottom: 2rem;
-      max-width: 560px;
-    }
-    .hero-desc {
-      font-size: 0.95rem;
-      font-weight: 300;
-      color: var(--text-dim);
-      max-width: 580px;
-      margin-top: 0;
+    p.reg-intro {
+      font-size: 15px; color: var(--ink-mid);
+      max-width: 620px; margin-bottom: 2.5rem;
       line-height: 1.75;
     }
 
-    /* ── Schema cards ─────────────────────────────────────────── */
+    /* ─── Schema cards ────────────────────── */
     .schema-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1px;
-      background: var(--border-sub);
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 2rem;
     }
     .schema-card {
-      background: var(--bg);
-      padding: 2rem;
+      background: var(--surface);
+      padding: 1.6rem 1.8rem;
       position: relative;
-      overflow: hidden;
-      transition: background 0.25s;
+      transition: background var(--transition);
     }
-    .schema-card:hover { background: var(--bg-card); }
-    .schema-card::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(to right, var(--gold-dim), transparent);
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    .schema-card:hover::after { opacity: 1; }
+    .schema-card:hover { background: var(--blue-ghost); }
+
     .schema-card-file {
-      font-family: var(--ff-mono);
-      font-size: 0.8rem;
-      color: var(--teal);
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 11.5px; color: var(--blue);
+      margin-bottom: 0.6rem;
+      display: flex; align-items: center; gap: 0.4rem;
     }
-    .schema-card-file svg { flex-shrink: 0; opacity: 0.6; }
+    .schema-card-file svg { flex-shrink: 0; opacity: 0.55; }
+
     .schema-card-title {
-      font-family: var(--ff-display);
-      font-size: 1.2rem;
-      font-weight: 500;
-      color: #f0ece3;
+      font-family: var(--font-serif);
+      font-size: 17px; font-weight: 400; color: var(--navy);
       margin-bottom: 0.5rem;
     }
     .schema-card-desc {
-      font-size: 0.875rem;
-      color: var(--text-dim);
-      font-weight: 300;
-      line-height: 1.6;
-      margin-bottom: 1rem;
+      font-size: 13.5px; color: var(--ink-mid);
+      line-height: 1.65; margin-bottom: 1rem;
     }
     .schema-card-validates {
-      font-family: var(--ff-mono);
-      font-size: 0.65rem;
-      letter-spacing: 0.08em;
-      color: var(--text-faint);
-      margin-bottom: 0.8rem;
+      font-family: var(--font-mono);
+      font-size: 10px; letter-spacing: 0.08em;
+      color: var(--ink-muted); margin-bottom: 0.9rem;
     }
-    .schema-card-validates span { color: var(--gold-dim); }
+    .schema-card-validates span { color: var(--navy-mid); font-weight: 500; }
+
     .schema-card-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-family: var(--ff-mono);
-      font-size: 0.68rem;
-      color: var(--teal);
-      transition: color 0.2s;
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      font-family: var(--font-mono); font-size: 11px;
+      color: var(--blue); text-decoration: none;
+      transition: color var(--transition);
     }
-    .schema-card-link:hover { color: #6dc4cc; text-decoration: none; }
+    .schema-card-link:hover { color: var(--navy); text-decoration: none; }
     .schema-card-link::after { content: '→'; }
 
-    /* ── Vocab tables ─────────────────────────────────────────── */
+    /* ─── Machine-readable info block ─────── */
+    .machine-block {
+      background: var(--surface-tinted);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--blue);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      padding: 1.2rem 1.5rem;
+    }
+    .machine-block-label {
+      font-family: var(--font-mono);
+      font-size: 9.5px; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--blue);
+      margin-bottom: 0.5rem;
+    }
+    .machine-block p {
+      font-size: 13.5px; color: var(--ink-mid); line-height: 1.7;
+    }
+    .machine-block a {
+      font-family: var(--font-mono); font-size: 12px;
+      color: var(--blue); text-decoration: none;
+    }
+    .machine-block a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+    /* ─── Code blocks ─────────────────────── */
+    .code-label {
+      font-family: var(--font-mono);
+      font-size: 11px; color: var(--ink-muted);
+      margin-bottom: 0.4rem; margin-top: 1.5rem;
+    }
+    pre {
+      background: var(--surface-tinted);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--navy-pale);
+      padding: 1.2rem 1.5rem;
+      overflow-x: auto;
+      margin-bottom: 1.5rem;
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    }
+    pre code {
+      font-family: var(--font-mono);
+      font-size: 12.5px; color: var(--ink-mid);
+      background: none; padding: 0;
+      line-height: 1.7;
+    }
+
+    /* ─── Vocab tables ────────────────────── */
     .vocab-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 3rem;
+      gap: 2.5rem 3rem;
     }
     .vocab-block h3 {
-      font-family: var(--ff-display);
-      font-size: 1.2rem;
-      font-weight: 500;
-      color: #f0ece3;
-      margin-bottom: 1rem;
+      font-family: var(--font-serif);
+      font-size: 18px; font-weight: 400; color: var(--navy);
+      margin-bottom: 0.8rem; margin-top: 0;
+    }
+    .vocab-block h3 + h3 { margin-top: 2.5rem; }
+
+    .vocab-table-wrap {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin-bottom: 0;
     }
     .vocab-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.85rem;
+      width: 100%; border-collapse: collapse;
+      font-size: 13.5px;
     }
-    .vocab-table thead tr { border-bottom: 1px solid var(--border); }
-    .vocab-table th {
-      font-family: var(--ff-mono);
-      font-size: 0.58rem;
-      letter-spacing: 0.14em;
+    .vocab-table thead { background: var(--navy); }
+    .vocab-table thead th {
+      font-family: var(--font-body); font-size: 10.5px;
+      font-weight: 600; letter-spacing: 0.05em;
       text-transform: uppercase;
-      color: var(--gold-dim);
-      text-align: left;
-      padding: 0.5rem 0.8rem;
-      font-weight: 400;
-    }
-    .vocab-table td {
-      padding: 0.55rem 0.8rem;
-      border-bottom: 1px solid var(--border-sub);
-      color: var(--text-dim);
-      font-weight: 300;
-      vertical-align: top;
-    }
-    .vocab-table tr:last-child td { border-bottom: none; }
-    .vocab-table td code { font-size: 0.75em; }
-
-    /* ── Versioning ───────────────────────────────────────────── */
-    .version-block {
-      border: 1px solid var(--border-sub);
-      padding: 2rem;
-      background: var(--bg-surface);
-    }
-    .version-block h3 {
-      font-family: var(--ff-display);
-      font-size: 1.3rem;
-      color: #f0ece3;
-      margin-bottom: 1rem;
-    }
-    .version-block p {
-      font-size: 0.9rem;
-      color: var(--text-dim);
-      font-weight: 300;
-      margin-bottom: 0.7rem;
-    }
-    .version-block code { font-size: 0.78em; }
-    .version-entries { display: flex; flex-direction: column; gap: 1px; margin-top: 1.5rem; background: var(--border-sub); }
-    .version-entry {
-      background: var(--bg);
-      padding: 1rem 1.2rem;
-      display: flex;
-      gap: 1.5rem;
-      align-items: flex-start;
-    }
-    .version-tag {
-      font-family: var(--ff-mono);
-      font-size: 0.78rem;
-      color: var(--gold);
+      color: rgba(255,255,255,0.80);
+      text-align: left; padding: 8px 12px;
       white-space: nowrap;
-      min-width: 60px;
     }
-    .version-detail {
-      font-size: 0.875rem;
-      color: var(--text-dim);
-      font-weight: 300;
+    .vocab-table tbody tr { border-bottom: 1px solid var(--border); }
+    .vocab-table tbody tr:last-child { border-bottom: none; }
+    .vocab-table tbody tr:nth-child(even) { background: var(--surface-warm); }
+    .vocab-table tbody td {
+      padding: 7px 12px; color: var(--ink-mid);
+      vertical-align: top; line-height: 1.55;
     }
-    .version-detail strong { color: var(--text); font-weight: 400; }
-    .version-detail a { font-size: 0.8rem; }
+    .vocab-table tbody td:first-child {
+      font-family: var(--font-mono); font-size: 12px;
+      color: var(--navy-mid); font-weight: 500;
+      white-space: nowrap;
+    }
 
-    /* ── Machine-readable ─────────────────────────────────────── */
-    .machine-block {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-sub);
-      border-left: 2px solid var(--teal);
-      padding: 1.5rem 1.8rem;
-      margin-top: 2rem;
+    /* ─── Version block ───────────────────── */
+    .version-block {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
     }
-    .machine-block h3 {
-      font-family: var(--ff-mono);
-      font-size: 0.65rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--teal);
-      margin-bottom: 0.8rem;
+    .version-block-header {
+      padding: 1.4rem 1.6rem;
+      background: var(--surface-tinted);
+      border-bottom: 1px solid var(--border);
     }
-    .machine-block p { font-size: 0.875rem; color: var(--text-dim); font-weight: 300; }
-    .machine-block a { font-family: var(--ff-mono); font-size: 0.8rem; }
+    .version-block-header h3 {
+      font-family: var(--font-serif);
+      font-size: 18px; font-weight: 400; color: var(--navy);
+      margin-bottom: 0.6rem;
+    }
+    .version-block-header p {
+      font-size: 13.5px; color: var(--ink-mid);
+      line-height: 1.7; margin-bottom: 0.5rem;
+    }
+    .version-block-header p:last-child { margin-bottom: 0; }
 
-    /* ── Footer ───────────────────────────────────────────────── */
-    footer {
-      border-top: 1px solid var(--border-sub);
-      padding: 2.5rem 0;
+    .version-entries { display: flex; flex-direction: column; gap: 1px; background: var(--border); }
+    .version-entry {
+      background: var(--surface);
+      padding: 1rem 1.6rem;
+      display: flex; gap: 1.5rem; align-items: flex-start;
+      transition: background var(--transition);
     }
-    .footer-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
+    .version-entry:hover { background: var(--blue-ghost); }
+    .version-tag {
+      font-family: var(--font-mono); font-size: 12.5px;
+      color: var(--blue); white-space: nowrap; min-width: 44px;
+      padding-top: 2px;
     }
-    .footer-logo { font-family: var(--ff-display); font-size: 1rem; color: var(--text-dim); }
-    .footer-links { display: flex; gap: 1.5rem; list-style: none; }
-    .footer-links a {
-      font-family: var(--ff-mono);
-      font-size: 0.62rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-faint);
-      transition: color 0.2s;
+    .version-detail { font-size: 13.5px; color: var(--ink-mid); line-height: 1.65; }
+    .version-detail strong { color: var(--ink); font-weight: 600; }
+    .version-detail a {
+      display: inline-block; margin-top: 0.3rem;
+      font-family: var(--font-mono); font-size: 11.5px;
+      color: var(--blue); text-decoration: none;
     }
-    .footer-links a:hover { color: var(--gold); text-decoration: none; }
-    .footer-meta { font-family: var(--ff-mono); font-size: 0.6rem; color: var(--text-faint); }
+    .version-detail a:hover { text-decoration: underline; text-underline-offset: 3px; }
+    .version-entry--future .version-tag { color: var(--ink-faint); }
+    .version-entry--future .version-detail { color: var(--ink-muted); }
 
+    /* ─── Responsive ──────────────────────── */
     @media (max-width: 800px) {
       .schema-grid { grid-template-columns: 1fr; }
-      .vocab-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .vocab-grid  { grid-template-columns: 1fr; gap: 2rem; }
+    }
+    @media (max-width: 600px) {
+      .page-wrap { padding: 0 var(--space-md); }
+      .reg-section { padding: 3rem 0; }
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="header-inner">
-      <a href="https://openchronology.org" class="header-logo" style="text-decoration:none;">
-        <div class="logo-mark"></div>
-        <strong>OpenChronology</strong>
-        <span class="sep">/</span>
-        Schema Registry
+  <!-- ── Navigation ─────────────────────────── -->
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a href="https://openchronology.org" class="nav-brand">
+        <span class="nav-brand-dot"></span>
+        OpenChronology
       </a>
-      <span class="header-badge">v0.3 Pre-Release</span>
+      <ul class="nav-links">
+        <li><a href="#schemas" class="active">Schemas</a></li>
+        <li><a href="#vocab">Vocabularies</a></li>
+        <li><a href="#versioning">Versioning</a></li>
+        <li><a href="https://openchronology.org/specification.html">Specification</a></li>
+        <li><a href="https://openchronology.org/ai-guide.html">AI Guide</a></li>
+        <li><a href="https://github.com/knoj/openchronology">GitHub</a></li>
+      </ul>
+      <span class="spec-badge spec-badge--draft" style="margin-left:8px;">v0.3 Pre-Release</span>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <line x1="3" y1="6"  x2="17" y2="6"/>
+          <line x1="3" y1="10" x2="17" y2="10"/>
+          <line x1="3" y1="14" x2="17" y2="14"/>
+        </svg>
+      </button>
     </div>
-  </header>
+  </nav>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="hero-bg"></div>
-    <div class="container">
-      <div class="hero-eyebrow">JSON Schema Registry</div>
-      <h1 class="hero-title">OpenChronology<br>Schema Registry</h1>
-      <p class="hero-sub">Machine-readable validation schemas for every file type in the standard.</p>
-      <p class="hero-desc">
-        OpenChronology publishes JSON Schema (draft/2020-12) files for all formats in the file family.
-        Reference these schemas in your <code>.chron</code> files via the <code>$schema</code> field
-        to enable validation tooling support in editors and build pipelines.
+  <!-- ── Hero ───────────────────────────────── -->
+  <div class="page-header page-header--hero">
+    <div class="page-wrap" style="max-width:var(--wrap-wide); margin:0 auto; padding:0 var(--space-lg);">
+      <div class="page-eyebrow">JSON Schema Registry</div>
+      <h1 class="page-title">Schema Registry</h1>
+      <p class="page-lead">
+        Machine-readable validation schemas for every file type in the OpenChronology standard.
+        Reference these via the <code>$schema</code> field to enable editor and build-tool validation.
       </p>
     </div>
-  </section>
+  </div>
 
-  <!-- Schemas -->
-  <section id="schemas">
-    <div class="container">
-      <div class="sec-label">v0.3 Schemas</div>
-      <h2 class="sec-title">Published Schemas</h2>
-      <p class="sec-intro">Six schemas covering all five file types. The core schema is the normative conformance floor; the full schema is its superset for complete validation.</p>
+  <!-- ── Published Schemas ──────────────────── -->
+  <section class="reg-section" id="schemas">
+    <div class="page-wrap">
+      <div class="reg-eyebrow">v0.3 Schemas</div>
+      <h2 class="reg-title">Published Schemas</h2>
+      <p class="reg-intro">Six schemas covering all five file types. The core schema is the normative conformance floor; the full schema is its superset for complete validation.</p>
 
       <div class="schema-grid">
 
@@ -516,23 +363,28 @@
       </div>
 
       <div class="machine-block">
-        <h3>Machine-Readable Registry Index</h3>
-        <p>A structured JSON index of all schemas, built-in vocabularies, MIME types, and versioning policy is available for tools and parsers at <a href="v0.3/index.json">schemas.openchronology.org/v0.3/index.json</a>. The root registry index — listing all spec versions — is at <a href="index.json">schemas.openchronology.org/index.json</a>.</p>
+        <div class="machine-block-label">Machine-Readable Registry Index</div>
+        <p>
+          A structured JSON index of all schemas, built-in vocabularies, MIME types, and versioning
+          policy is available at <a href="v0.3/index.json">schemas.openchronology.org/v0.3/index.json</a>.
+          The root registry index listing all spec versions is at
+          <a href="index.json">schemas.openchronology.org/index.json</a>.
+        </p>
       </div>
     </div>
   </section>
 
-  <!-- Using the schemas -->
-  <section id="usage">
-    <div class="container">
-      <div class="sec-label">Usage</div>
-      <h2 class="sec-title">Referencing a Schema</h2>
-      <p class="sec-intro">Add the <code>$schema</code> field to your file's <code>meta</code> block to enable validation in editors and build tools that support JSON Schema.</p>
+  <!-- ── Using the Schemas ──────────────────── -->
+  <section class="reg-section" id="usage">
+    <div class="page-wrap">
+      <div class="reg-eyebrow">Usage</div>
+      <h2 class="reg-title">Referencing a Schema</h2>
+      <p class="reg-intro">Add the <code>$schema</code> field to your file's <code>meta</code> block to enable validation in editors and build tools that support JSON Schema.</p>
 
-      <p style="font-size:0.9rem; color:var(--text-dim); font-weight:300; margin-bottom:1rem;">In a <code>.chron</code> event file:</p>
-      <pre style="background:var(--bg-surface); border:1px solid var(--border-sub); border-left:2px solid var(--gold-dim); padding:1.2rem 1.5rem; overflow-x:auto; margin-bottom:2rem; border-radius:0 2px 2px 0;"><code style="font-family:var(--ff-mono); font-size:0.78rem; color:var(--text-dim); background:none; padding:0; line-height:1.6;">{
+      <div class="code-label">In a <code>.chron</code> event file:</div>
+      <pre><code>{
   "meta": {
-    "schema_version": "0.2",
+    "schema_version": "0.3",
     "$schema": "https://schemas.openchronology.org/v0.3/core.schema.json",
     "canonical_url": "https://example.com/events/my-event.chron"
   },
@@ -545,8 +397,8 @@
   }
 }</code></pre>
 
-      <p style="font-size:0.9rem; color:var(--text-dim); font-weight:300; margin-bottom:1rem;">In a <code>.chroncal</code> calendar definition file:</p>
-      <pre style="background:var(--bg-surface); border:1px solid var(--border-sub); border-left:2px solid var(--gold-dim); padding:1.2rem 1.5rem; overflow-x:auto; border-radius:0 2px 2px 0;"><code style="font-family:var(--ff-mono); font-size:0.78rem; color:var(--text-dim); background:none; padding:0; line-height:1.6;">{
+      <div class="code-label">In a <code>.chroncal</code> calendar definition file:</div>
+      <pre><code>{
   "meta": {
     "id": "my-calendar",
     "version": "1.0.0",
@@ -558,124 +410,137 @@
     </div>
   </section>
 
-  <!-- Vocabularies -->
-  <section id="vocab">
-    <div class="container">
-      <div class="sec-label">Reference</div>
-      <h2 class="sec-title">Controlled Vocabularies</h2>
-      <p class="sec-intro">These values are constrained by enum in the schemas. All are case-sensitive.</p>
+  <!-- ── Controlled Vocabularies ────────────── -->
+  <section class="reg-section" id="vocab">
+    <div class="page-wrap">
+      <div class="reg-eyebrow">Reference</div>
+      <h2 class="reg-title">Controlled Vocabularies</h2>
+      <p class="reg-intro">These values are constrained by enum in the schemas. All are case-sensitive.</p>
 
       <div class="vocab-grid">
 
         <div class="vocab-block">
           <h3>Built-in Calendars</h3>
-          <table class="vocab-table">
-            <thead><tr><th>ID</th><th>Standard</th></tr></thead>
-            <tbody>
-              <tr><td><code>gregorian</code></td><td>ISO 8601 / Proleptic Gregorian</td></tr>
-              <tr><td><code>julian</code></td><td>Julian Calendar</td></tr>
-              <tr><td><code>islamic</code></td><td>Islamic Hijri (civil)</td></tr>
-              <tr><td><code>hebrew</code></td><td>Hebrew Calendar</td></tr>
-              <tr><td><code>chinese</code></td><td>Chinese Lunisolar</td></tr>
-              <tr><td><code>unix</code></td><td>POSIX Epoch (seconds)</td></tr>
-              <tr><td><code>jdn</code></td><td>Julian Day Number</td></tr>
-            </tbody>
-          </table>
+          <div class="vocab-table-wrap">
+            <table class="vocab-table">
+              <thead><tr><th>ID</th><th>Standard</th></tr></thead>
+              <tbody>
+                <tr><td>gregorian</td><td>ISO 8601 / Proleptic Gregorian</td></tr>
+                <tr><td>julian</td><td>Julian Calendar</td></tr>
+                <tr><td>islamic</td><td>Islamic Hijri (civil)</td></tr>
+                <tr><td>hebrew</td><td>Hebrew Calendar</td></tr>
+                <tr><td>chinese</td><td>Chinese Lunisolar</td></tr>
+                <tr><td>unix</td><td>POSIX Epoch (seconds)</td></tr>
+                <tr><td>jdn</td><td>Julian Day Number</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div class="vocab-block">
           <h3>Built-in Universes</h3>
-          <table class="vocab-table">
-            <thead><tr><th>ID</th><th>Description</th></tr></thead>
-            <tbody>
-              <tr><td><code>real</code></td><td>The real world — always available, never requires a fetch</td></tr>
-              <tr><td><code>relative</code></td><td>Generic relative universe — requires an inline anchor</td></tr>
-            </tbody>
-          </table>
+          <div class="vocab-table-wrap">
+            <table class="vocab-table">
+              <thead><tr><th>ID</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td>real</td><td>The real world — always available, never requires a fetch</td></tr>
+                <tr><td>relative</td><td>Generic relative universe — requires an inline anchor</td></tr>
+              </tbody>
+            </table>
+          </div>
 
           <h3 style="margin-top:2rem;">Precision Values</h3>
-          <table class="vocab-table">
-            <thead><tr><th>Value</th><th>Scale</th></tr></thead>
-            <tbody>
-              <tr><td><code>millisecond</code></td><td>Sub-second</td></tr>
-              <tr><td><code>second</code> · <code>minute</code> · <code>hour</code></td><td>Time of day</td></tr>
-              <tr><td><code>day</code> · <code>month</code> · <code>year</code></td><td>Calendar scale</td></tr>
-              <tr><td><code>decade</code> · <code>century</code> · <code>millennium</code></td><td>Historical scale</td></tr>
-              <tr><td><code>epoch</code></td><td>Geological / cosmological (Ma, Ga)</td></tr>
-              <tr><td><code>circa</code></td><td>Approximate — pair with uncertainty block</td></tr>
-              <tr><td><code>custom</code></td><td>Defined by calendar's unit system</td></tr>
-            </tbody>
-          </table>
+          <div class="vocab-table-wrap">
+            <table class="vocab-table">
+              <thead><tr><th>Value</th><th>Scale</th></tr></thead>
+              <tbody>
+                <tr><td>millisecond</td><td>Sub-second</td></tr>
+                <tr><td>second · minute · hour</td><td>Time of day</td></tr>
+                <tr><td>day · month · year</td><td>Calendar scale</td></tr>
+                <tr><td>decade · century · millennium</td><td>Historical scale</td></tr>
+                <tr><td>epoch</td><td>Geological / cosmological (Ma, Ga)</td></tr>
+                <tr><td>circa</td><td>Approximate — pair with uncertainty block</td></tr>
+                <tr><td>custom</td><td>Defined by calendar's unit system</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div class="vocab-block">
           <h3>Relation Types</h3>
-          <table class="vocab-table">
-            <thead><tr><th>Category</th><th>Types</th></tr></thead>
-            <tbody>
-              <tr><td>Hierarchical</td><td><code>parent</code> · <code>child</code></td></tr>
-              <tr><td>Ordering</td><td><code>precedes</code> · <code>follows</code> · <code>concurrent_with</code></td></tr>
-              <tr><td>Causal</td><td><code>causes</code> · <code>caused_by</code> · <code>influences</code> · <code>influenced_by</code></td></tr>
-              <tr><td>Spatial</td><td><code>contains</code> · <code>contained_by</code></td></tr>
-              <tr><td>Continuity</td><td><code>contradicts</code> · <code>retcons</code> · <code>retconned_by</code> · <code>variant_of</code></td></tr>
-              <tr><td>References</td><td><code>references</code> · <code>referenced_by</code></td></tr>
-            </tbody>
-          </table>
+          <div class="vocab-table-wrap">
+            <table class="vocab-table">
+              <thead><tr><th>Category</th><th>Types</th></tr></thead>
+              <tbody>
+                <tr><td>Hierarchical</td><td>parent · child</td></tr>
+                <tr><td>Ordering</td><td>precedes · follows · concurrent_with</td></tr>
+                <tr><td>Causal</td><td>causes · caused_by · influences · influenced_by</td></tr>
+                <tr><td>Spatial</td><td>contains · contained_by</td></tr>
+                <tr><td>Continuity</td><td>contradicts · retcons · retconned_by · variant_of</td></tr>
+                <tr><td>References</td><td>references · referenced_by</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div class="vocab-block">
           <h3>Canon Status Values</h3>
-          <table class="vocab-table">
-            <thead><tr><th>Value</th><th>Meaning</th></tr></thead>
-            <tbody>
-              <tr><td><code>canon</code></td><td>Accepted as true within the declared scope</td></tr>
-              <tr><td><code>legends</code></td><td>Formerly canon, now superseded</td></tr>
-              <tr><td><code>disputed</code></td><td>The relationship is contested</td></tr>
-              <tr><td><code>non_canon</code></td><td>Explicitly outside accepted continuity</td></tr>
-              <tr><td><code>unknown</code></td><td>Canon status not established</td></tr>
-            </tbody>
-          </table>
+          <div class="vocab-table-wrap">
+            <table class="vocab-table">
+              <thead><tr><th>Value</th><th>Meaning</th></tr></thead>
+              <tbody>
+                <tr><td>canon</td><td>Accepted as true within the declared scope</td></tr>
+                <tr><td>legends</td><td>Formerly canon, now superseded</td></tr>
+                <tr><td>disputed</td><td>The relationship is contested</td></tr>
+                <tr><td>non_canon</td><td>Explicitly outside accepted continuity</td></tr>
+                <tr><td>unknown</td><td>Canon status not established</td></tr>
+              </tbody>
+            </table>
+          </div>
 
           <h3 style="margin-top:2rem;">Event Types</h3>
-          <table class="vocab-table">
-            <thead><tr><th>Value</th><th>Role</th></tr></thead>
-            <tbody>
-              <tr><td><code>event</code></td><td>Standard point or span — default when absent</td></tr>
-              <tr><td><code>era</code></td><td>Named period containing other events</td></tr>
-              <tr><td><code>marker</code></td><td>Reference point or annotation</td></tr>
-              <tr><td><code>tombstone</code></td><td>Soft-deletion record — MUST NOT render</td></tr>
-              <tr><td><code>deprecated</code></td><td>Superseded event — render with caution</td></tr>
-            </tbody>
-          </table>
+          <div class="vocab-table-wrap">
+            <table class="vocab-table">
+              <thead><tr><th>Value</th><th>Role</th></tr></thead>
+              <tbody>
+                <tr><td>event</td><td>Standard point or span — default when absent</td></tr>
+                <tr><td>era</td><td>Named period containing other events</td></tr>
+                <tr><td>marker</td><td>Reference point or annotation</td></tr>
+                <tr><td>tombstone</td><td>Soft-deletion record — MUST NOT render</td></tr>
+                <tr><td>deprecated</td><td>Superseded event — render with caution</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
       </div>
     </div>
   </section>
 
-  <!-- Versioning -->
-  <section id="versioning">
-    <div class="container">
-      <div class="sec-label">Policy</div>
-      <h2 class="sec-title">Versioning</h2>
-      <p class="sec-intro">Schema versions follow the OpenChronology spec version. The same compatibility rules apply.</p>
+  <!-- ── Versioning ──────────────────────────── -->
+  <section class="reg-section" id="versioning">
+    <div class="page-wrap">
+      <div class="reg-eyebrow">Policy</div>
+      <h2 class="reg-title">Versioning</h2>
+      <p class="reg-intro">Schema versions follow the OpenChronology spec version. The same compatibility rules apply.</p>
 
       <div class="version-block">
-        <h3>Compatibility Rule</h3>
-        <p><strong>Same MAJOR version = compatible.</strong> Parsers MUST silently ignore unrecognized fields. This is the mechanism that makes MINOR version upgrades automatic — a v0.2 parser loading a v0.3 file ignores new optional fields it does not recognize.</p>
-        <p>MAJOR version changes are breaking and require a published migration guide and conversion tool. Authors should never need to manually migrate <code>.chron</code> files.</p>
-
+        <div class="version-block-header">
+          <h3>Compatibility Rule</h3>
+          <p><strong>Same MAJOR version = compatible.</strong> Parsers MUST silently ignore unrecognized fields. This is the mechanism that makes MINOR version upgrades automatic — a v0.2 parser loading a v0.3 file ignores new optional fields it does not recognize.</p>
+          <p>MAJOR version changes are breaking and require a published migration guide and conversion tool. Authors should never need to manually migrate <code>.chron</code> files.</p>
+        </div>
         <div class="version-entries">
           <div class="version-entry">
             <div class="version-tag">v0.3</div>
             <div class="version-detail">
               <strong>Current pre-release.</strong> Adds <code>content.sources</code> for external citations. Expands significance metrics vocabulary. Documents built-in bodies. Fixes <code>relations</code> to require <code>target_id</code>. Pre-release — breaking changes possible before 1.0.
-              <br><a href="v0.3/index.json" style="margin-top:0.3rem; display:inline-block;">→ v0.3 index.json</a>
+              <br><a href="v0.3/index.json">→ v0.3 index.json</a>
             </div>
           </div>
-          <div class="version-entry">
+          <div class="version-entry version-entry--future">
             <div class="version-tag">v1.0</div>
-            <div class="version-detail" style="color:var(--text-faint);">
+            <div class="version-detail">
               Planned stable release. Schemas will be frozen. Migration guide from v0.x will be published.
             </div>
           </div>
@@ -684,17 +549,41 @@
     </div>
   </section>
 
-  <footer>
+  <!-- ── Footer ─────────────────────────────── -->
+  <footer class="site-footer">
     <div class="footer-inner">
-      <div class="footer-logo">OpenChronology Schema Registry</div>
+      <div>
+        <div class="footer-brand">
+          <span class="footer-brand-dot"></span>
+          OpenChronology
+        </div>
+        <div class="footer-tagline">Schema Registry</div>
+      </div>
       <ul class="footer-links">
         <li><a href="https://openchronology.org">openchronology.org</a></li>
         <li><a href="https://openchronology.org/specification.html">Specification</a></li>
         <li><a href="https://github.com/knoj/openchronology">GitHub</a></li>
       </ul>
-      <div class="footer-meta">v0.3 Pre-Release · CC-BY-4.0</div>
+      <div class="footer-copy">v0.3 Pre-Release · CC-BY-4.0</div>
     </div>
   </footer>
 
+  <script>
+    // Mobile nav toggle
+    const navToggle = document.querySelector('.nav-toggle');
+    const navLinks  = document.querySelector('.nav-links');
+    if (navToggle) {
+      navToggle.addEventListener('click', () => {
+        const open = navLinks.classList.toggle('is-open');
+        navToggle.setAttribute('aria-expanded', open);
+      });
+      document.addEventListener('click', e => {
+        if (!e.target.closest('.site-nav')) {
+          navLinks.classList.remove('is-open');
+          navToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+  </script>
 </body>
 </html>

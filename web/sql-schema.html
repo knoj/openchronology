@@ -7,185 +7,293 @@
   <meta name="description" content="Non-normative advisory SQL schema for OpenChronology implementations using relational database backends. Covers SQLite, PostgreSQL, and MySQL.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Spectral:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300;1,8..60,400&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <style>
 
-    /* ── Header ───────────────────────────────────────────────── */
-    header {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-      background: rgba(8,11,18,0.95); backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border-sub); padding: 1rem 0;
+    /* ─── Layout ──────────────────────────── */
+    :root { --sidebar-w: 256px; }
+
+    .page-layout {
+      display: flex;
+      max-width: 1400px;
+      margin: 0 auto;
     }
-    .header-inner { max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; }
-    .header-logo {
-      font-family: var(--ff-display); font-size: 1.2rem; font-weight: 500;
-      color: var(--text); letter-spacing: 0.02em;
+
+    /* ─── Sidebar ─────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      position: sticky;
+      top: 54px;
+      height: calc(100vh - 54px);
+      overflow-y: auto;
+      padding: 2.5rem 0 2rem 1.75rem;
+      border-right: 1px solid var(--border);
+      scrollbar-width: thin;
+      scrollbar-color: var(--ink-faint) transparent;
+    }
+    .sidebar::-webkit-scrollbar { width: 3px; }
+    .sidebar::-webkit-scrollbar-thumb { background: var(--ink-faint); border-radius: 2px; }
+
+    .toc-header {
+      font-family: var(--font-mono);
+      font-size: 9.5px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--ink-muted);
+      margin-bottom: 1.2rem; padding-bottom: 0.6rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .toc-list { list-style: none; }
+    .toc-list li { margin-bottom: 0.05rem; }
+    .toc-list a {
+      font-family: var(--font-mono);
+      font-size: 11px; color: var(--ink-muted);
+      display: block;
+      padding: 0.28rem 0.5rem 0.28rem 0;
+      border-left: 2px solid transparent;
+      transition: color var(--transition), border-color var(--transition), padding var(--transition);
+      line-height: 1.4; text-decoration: none;
+    }
+    .toc-list a:hover { color: var(--ink-mid); text-decoration: none; }
+    .toc-list a.active {
+      color: var(--blue);
+      border-left-color: var(--blue);
+      padding-left: 0.6rem;
+    }
+    .toc-divider {
+      height: 1px; background: var(--border);
+      margin: 0.7rem 0.5rem 0.7rem 0;
+    }
+    .toc-back {
+      margin-top: 1.5rem; padding-top: 1.2rem;
+      border-top: 1px solid var(--border);
+    }
+    .toc-back a {
+      display: flex; align-items: center; gap: 0.4rem;
+      font-family: var(--font-mono); font-size: 10.5px;
+      color: var(--blue); text-decoration: none;
+      transition: color var(--transition);
+    }
+    .toc-back a:hover { color: var(--navy); }
+
+    /* ─── Main content ────────────────────── */
+    .spec-content {
+      flex: 1; min-width: 0;
+      padding: 3rem 3.5rem 6rem 3rem;
+      max-width: 860px;
+    }
+
+    /* ─── Title block ─────────────────────── */
+    .spec-title-block {
+      padding-bottom: 2.5rem; margin-bottom: 3rem;
+      border-bottom: 2px solid var(--navy-pale);
+    }
+    .spec-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 10px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--blue);
+      margin-bottom: 0.8rem;
       display: flex; align-items: center; gap: 0.6rem;
     }
-    .logo-mark {
-      width: 28px; height: 28px; border: 1.5px solid var(--gold); border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      position: relative; flex-shrink: 0;
+    .spec-eyebrow::before { content: ''; width: 20px; height: 1px; background: var(--blue); }
+    .spec-title {
+      font-family: var(--font-serif);
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 300; color: var(--navy);
+      line-height: 1.1; margin-bottom: 0.5rem;
     }
-    .logo-mark::before { content: ''; width: 8px; height: 8px; background: var(--gold); border-radius: 50%; }
-    .logo-mark::after { content: ''; position: absolute; width: 18px; height: 1px; background: var(--gold); opacity: 0.5; }
-    .header-sep { color: var(--text-faint); margin: 0 0.4rem; font-weight: 300; }
-    .header-sub { color: var(--text-dim); font-weight: 300; }
-    .header-badge { font-family: var(--ff-mono); font-size: 0.62rem; letter-spacing: 0.1em; color: var(--gold-dim); border: 1px solid var(--gold-dim); padding: 0.2em 0.6em; border-radius: 2px; }
-
-    /* ── Layout ───────────────────────────────────────────────── */
-    .page-layout { display: flex; max-width: 1200px; margin: 0 auto; padding-top: 64px; }
-
-    /* ── Sidebar ──────────────────────────────────────────────── */
-    .sidebar {
-      width: var(--sidebar-w); flex-shrink: 0;
-      position: sticky; top: 64px; height: calc(100vh - 64px);
-      overflow-y: auto; padding: 2.5rem 0 2rem 2rem;
-      border-right: 1px solid var(--border-sub);
-      scrollbar-width: thin; scrollbar-color: var(--text-faint) transparent;
-    }
-    .toc-header { font-family: var(--ff-mono); font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 1.2rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--border-sub); }
-    .toc-list { list-style: none; }
-    .toc-list li { margin-bottom: 0.1rem; }
-    .toc-list a { font-family: var(--ff-mono); font-size: 0.68rem; color: var(--text-faint); display: block; padding: 0.3rem 0.5rem 0.3rem 0; border-left: 2px solid transparent; transition: color 0.2s, border-color 0.2s, padding 0.2s; line-height: 1.4; }
-    .toc-list a:hover { color: var(--text-dim); text-decoration: none; }
-    .toc-list a.active { color: var(--gold); border-left-color: var(--gold); padding-left: 0.6rem; }
-    .toc-divider { height: 1px; background: var(--border-sub); margin: 0.8rem 0.5rem 0.8rem 0; }
-    .toc-back { margin-top: 1.5rem; padding-top: 1.2rem; border-top: 1px solid var(--border-sub); }
-    .toc-back a { display: flex; align-items: center; gap: 0.4rem; font-family: var(--ff-mono); font-size: 0.65rem; color: var(--text-dim); }
-    .toc-back a:hover { color: var(--gold); text-decoration: none; }
-
-    /* ── Main content ─────────────────────────────────────────── */
-    .content { flex: 1; min-width: 0; padding: 3rem 3.5rem 6rem 3.5rem; max-width: 860px; }
-
-    /* ── Title block ──────────────────────────────────────────── */
-    .title-block { padding-bottom: 2.5rem; margin-bottom: 3rem; border-bottom: 1px solid var(--border); }
-    .eyebrow { font-family: var(--ff-mono); font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.6rem; }
-    .eyebrow::before { content: ''; width: 20px; height: 1px; background: var(--gold-dim); }
-    h1.page-title { font-family: var(--ff-display); font-size: 2.5rem; font-weight: 300; color: #f0ece3; line-height: 1.1; margin-bottom: 0.5rem; }
     .non-normative {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      font-family: var(--ff-mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
-      color: var(--teal); border: 1px solid rgba(74,159,168,0.3); padding: 0.3em 0.8em; border-radius: 2px;
+      display: inline-flex; align-items: center;
+      font-family: var(--font-mono); font-size: 10px;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--navy); border: 1px solid var(--navy-pale);
+      background: var(--navy-ghost);
+      padding: 0.25em 0.8em; border-radius: var(--radius-sm);
       margin-top: 0.8rem;
     }
 
-    /* ── Section headings ─────────────────────────────────────── */
-    .sec { margin-bottom: 3.5rem; scroll-margin-top: 80px; }
-    .sec-label { font-family: var(--ff-mono); font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem; }
-    .sec-label::before { content: ''; width: 16px; height: 1px; background: var(--gold-dim); }
-    h2.sec-title { font-family: var(--ff-display); font-size: 1.7rem; font-weight: 400; color: #f0ece3; margin-bottom: 0.9rem; scroll-margin-top: 80px; }
-    h3.sec-sub { font-family: var(--ff-display); font-size: 1.2rem; font-weight: 500; color: #e0dbd0; margin: 2rem 0 0.7rem; scroll-margin-top: 80px; }
-    .sec-divider { height: 1px; background: var(--border-sub); margin: 3rem 0; }
-    p { font-weight: 300; color: var(--text-dim); margin-bottom: 1rem; }
-    p strong { font-weight: 500; color: var(--text); }
-    ul { padding-left: 1.5rem; margin-bottom: 1rem; }
-    li { font-weight: 300; color: var(--text-dim); margin-bottom: 0.3rem; }
-    li strong { color: var(--text); font-weight: 500; }
-
-    /* ── Code blocks ──────────────────────────────────────────── */
-    pre {
-      background: var(--bg-surface); border: 1px solid var(--border-sub);
-      border-left: 2px solid var(--gold-dim); padding: 1.3rem 1.5rem;
-      overflow-x: auto; margin: 1rem 0 1.5rem; border-radius: 0 2px 2px 0;
+    /* ─── Section headings ────────────────── */
+    .spec-section {
+      margin-bottom: 4rem;
+      scroll-margin-top: 70px;
     }
-    pre code { font-family: var(--ff-mono); font-size: 0.77rem; color: var(--text-dim); background: none; padding: 0; line-height: 1.65; }
-    .sql-comment { color: var(--text-faint); }
-    .sql-keyword { color: var(--gold-dim); }
-    .sql-type { color: var(--teal); }
+    .sec-label {
+      font-family: var(--font-mono);
+      font-size: 9.5px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--blue);
+      margin-bottom: 0.5rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .sec-label::before { content: ''; width: 16px; height: 1px; background: var(--blue); }
+    h2.sec-title {
+      font-family: var(--font-serif);
+      font-size: clamp(22px, 3vw, 28px);
+      font-weight: 400; color: var(--navy);
+      line-height: 1.2; margin-bottom: 1rem;
+      scroll-margin-top: 70px; margin-top: 0;
+    }
+    h3.sec-sub {
+      font-family: var(--font-serif);
+      font-size: clamp(17px, 2vw, 20px);
+      font-weight: 400; color: var(--navy-mid);
+      margin: 2.5rem 0 0.8rem;
+      scroll-margin-top: 70px;
+    }
+    .sec-divider {
+      height: 1px; background: var(--border);
+      margin: 3.5rem 0;
+    }
 
-    /* ── Callout ──────────────────────────────────────────────── */
-    .callout { padding: 1rem 1.2rem; margin: 1.2rem 0; border-radius: 0 2px 2px 0; font-size: 0.9rem; font-weight: 300; }
-    .callout-note { background: rgba(200,164,90,0.07); border-left: 2px solid var(--gold-dim); color: var(--text-dim); }
-    .callout-label { font-family: var(--ff-mono); font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 0.3rem; }
+    /* ─── Code blocks ─────────────────────── */
+    pre {
+      background: var(--surface-tinted);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--navy-pale);
+      padding: 1.3rem 1.5rem;
+      overflow-x: auto;
+      margin: 1rem 0 1.5rem;
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    }
+    pre code {
+      font-family: var(--font-mono);
+      font-size: 12.5px; color: var(--ink-mid);
+      background: none; padding: 0;
+      line-height: 1.7;
+    }
+    .sql-comment { color: var(--ink-muted); font-style: italic; }
+    .sql-keyword { color: var(--navy); font-weight: 600; }
+    .sql-type    { color: var(--blue-dim); }
 
-    /* ── Table ────────────────────────────────────────────────── */
-    .spec-table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.875rem; }
-    .spec-table thead tr { border-bottom: 1px solid var(--border); }
-    .spec-table th { font-family: var(--ff-mono); font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold-dim); text-align: left; padding: 0.6rem 0.9rem; font-weight: 400; }
-    .spec-table td { padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border-sub); color: var(--text-dim); vertical-align: top; font-weight: 300; }
-    .spec-table tr:last-child td { border-bottom: none; }
-    .spec-table td code { font-size: 0.75em; }
+    /* ─── Spec page footer ────────────────── */
+    .spec-footer {
+      background: var(--navy);
+      color: rgba(255,255,255,0.55);
+      padding: 40px var(--space-lg);
+    }
+    .spec-footer-inner {
+      max-width: 1400px; margin: 0 auto;
+      display: flex; justify-content: space-between;
+      align-items: center; flex-wrap: wrap; gap: 1rem;
+    }
+    .spec-footer-brand {
+      font-family: var(--font-serif); font-size: 14px;
+      color: rgba(255,255,255,0.75);
+    }
+    .spec-footer-links {
+      display: flex; gap: 24px; list-style: none;
+    }
+    .spec-footer-links a {
+      font-family: var(--font-mono); font-size: 11px;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: rgba(255,255,255,0.45); text-decoration: none;
+      transition: color var(--transition);
+    }
+    .spec-footer-links a:hover { color: rgba(255,255,255,0.85); }
+    .spec-footer-meta {
+      font-family: var(--font-mono); font-size: 10.5px;
+      color: rgba(255,255,255,0.28);
+    }
 
-    /* ── Footer ───────────────────────────────────────────────── */
-    footer { border-top: 1px solid var(--border-sub); padding: 2.5rem calc(var(--sidebar-w) + 3.5rem) 2.5rem calc(var(--sidebar-w) + 3.5rem); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
-    .footer-logo { font-family: var(--ff-display); font-size: 1rem; color: var(--text-dim); }
-    .footer-links { display: flex; gap: 1.5rem; list-style: none; }
-    .footer-links a { font-family: var(--ff-mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); transition: color 0.2s; }
-    .footer-links a:hover { color: var(--gold); text-decoration: none; }
-    .footer-meta { font-family: var(--ff-mono); font-size: 0.6rem; color: var(--text-faint); }
-
-    @media (max-width: 900px) { .sidebar { display: none; } .content { padding: 2rem 1.5rem 4rem; } footer { padding: 2rem 1.5rem; } }
+    /* ─── Responsive ──────────────────────── */
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .spec-content { padding: 2rem 1.5rem 4rem; }
+    }
+    @media (max-width: 700px) {
+      .spec-content { padding: 1.5rem var(--space-md) 4rem; }
+    }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="header-inner">
-      <a href="specification.html" class="header-logo" style="text-decoration:none;">
-        <div class="logo-mark"></div>
+  <!-- ── Navigation ─────────────────────────── -->
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-brand">
+        <span class="nav-brand-dot"></span>
         OpenChronology
-        <span class="header-sep">/</span>
-        <span class="header-sub">Advisory SQL Schema</span>
       </a>
-      <span class="header-badge">Appendix A · Non-Normative</span>
+      <ul class="nav-links">
+        <li><a href="specification.html">Specification</a></li>
+        <li><a href="#design" class="active">SQL Schema</a></li>
+        <li><a href="https://openchronology.org/ai-guide.html">AI Guide</a></li>
+        <li><a href="https://github.com/knoj/openchronology">GitHub</a></li>
+        <li><a href="https://chronology.studio" class="nav-studio-link">chronology.studio</a></li>
+      </ul>
+      <span class="spec-badge spec-badge--draft" style="margin-left:8px;">Appendix A</span>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <line x1="3" y1="6"  x2="17" y2="6"/>
+          <line x1="3" y1="10" x2="17" y2="10"/>
+          <line x1="3" y1="14" x2="17" y2="14"/>
+        </svg>
+      </button>
     </div>
-  </header>
+  </nav>
 
   <div class="page-layout">
 
-    <nav class="sidebar">
+    <!-- ── Sidebar TOC ───────────────────────── -->
+    <nav class="sidebar" aria-label="Table of contents">
       <div class="toc-header">Contents</div>
       <ul class="toc-list" id="toc">
         <li><a href="#design" class="active">Design Principles</a></li>
         <div class="toc-divider"></div>
         <li><a href="#tables">Core Tables</a></li>
-        <li><a href="#t-packages">packages</a></li>
-        <li><a href="#t-events">events</a></li>
-        <li><a href="#t-relations">event_relations</a></li>
-        <li><a href="#t-metrics">event_metrics</a></li>
-        <li><a href="#t-media">event_media</a></li>
-        <li><a href="#t-calendars">calendars</a></li>
-        <li><a href="#t-universes">universes</a></li>
+        <li><a href="#t-packages" style="padding-left:0.8rem; font-size:10.5px; color:var(--ink-faint);">packages</a></li>
+        <li><a href="#t-events"   style="padding-left:0.8rem; font-size:10.5px; color:var(--ink-faint);">events</a></li>
+        <li><a href="#t-relations" style="padding-left:0.8rem; font-size:10.5px; color:var(--ink-faint);">event_relations</a></li>
+        <li><a href="#t-metrics"  style="padding-left:0.8rem; font-size:10.5px; color:var(--ink-faint);">event_metrics</a></li>
+        <li><a href="#t-media"    style="padding-left:0.8rem; font-size:10.5px; color:var(--ink-faint);">event_media</a></li>
+        <li><a href="#t-calendars" style="padding-left:0.8rem; font-size:10.5px; color:var(--ink-faint);">calendars</a></li>
+        <li><a href="#t-universes" style="padding-left:0.8rem; font-size:10.5px; color:var(--ink-faint);">universes</a></li>
         <div class="toc-divider"></div>
         <li><a href="#queries">Example Queries</a></li>
       </ul>
       <div class="toc-back">
-        <a href="specification.html">← Back to Specification</a>
+        <a href="specification.html">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="7,2 3,6 7,10"/></svg>
+          Back to Specification
+        </a>
       </div>
     </nav>
 
-    <main class="content">
+    <!-- ── Main content ──────────────────────── -->
+    <main class="spec-content">
 
-      <div class="title-block" id="top">
-        <div class="eyebrow">Appendix A · OpenChronology Specification v0.3</div>
-        <h1 class="page-title">Advisory SQL Schema</h1>
+      <!-- Title block -->
+      <div class="spec-title-block" id="top">
+        <div class="spec-eyebrow">Appendix A · OpenChronology Specification v0.3</div>
+        <h1 class="spec-title">Advisory SQL Schema</h1>
         <div class="non-normative">Non-Normative</div>
-        <p style="margin-top:1.2rem;">Implementations are free to store event data in any manner. This schema is provided as a reference for developers building relational database backends. Designed for SQLite, PostgreSQL, and MySQL compatibility. Nothing in this appendix is required for conformance.</p>
+        <p style="margin-top:1.2rem; color:var(--ink-mid); line-height:1.7;">
+          Implementations are free to store event data in any manner. This schema is provided as
+          a reference for developers building relational database backends. Designed for SQLite,
+          PostgreSQL, and MySQL compatibility. Nothing in this appendix is required for conformance.
+        </p>
       </div>
 
-      <!-- Design Principles -->
-      <section class="sec" id="design">
+      <!-- ── A.1 Design Principles ─────────────── -->
+      <section class="spec-section" id="design">
         <div class="sec-label">A.1</div>
         <h2 class="sec-title">Design Principles</h2>
-        <ul>
-          <li><strong>Full fidelity</strong> — The complete event JSON blob is stored in a <code>data</code> column. Indexed columns are projections of frequently-queried fields, not the source of truth.</li>
-          <li><strong>Normalization</strong> — Relations, metrics, and media are normalized into their own tables for efficient JOIN queries.</li>
-          <li><strong>Dual temporal storage</strong> — Temporal values are stored as both their original calendar-native string (for faithful display) and as a resolved Unix timestamp (for range queries and sorting).</li>
-          <li><strong>Tombstone retention</strong> — Tombstone records MUST be retained. Filter them with <code>WHERE type != 'tombstone'</code>. Never hard-delete them.</li>
+        <ul style="color:var(--ink-mid); line-height:1.8; padding-left:1.4rem;">
+          <li style="margin-bottom:0.5rem;"><strong style="color:var(--ink);">Full fidelity</strong> — The complete event JSON blob is stored in a <code>data</code> column. Indexed columns are projections of frequently-queried fields, not the source of truth.</li>
+          <li style="margin-bottom:0.5rem;"><strong style="color:var(--ink);">Normalization</strong> — Relations, metrics, and media are normalized into their own tables for efficient JOIN queries.</li>
+          <li style="margin-bottom:0.5rem;"><strong style="color:var(--ink);">Dual temporal storage</strong> — Temporal values are stored as both their original calendar-native string (for faithful display) and as a resolved Unix timestamp (for range queries and sorting).</li>
+          <li><strong style="color:var(--ink);">Tombstone retention</strong> — Tombstone records MUST be retained. Filter them with <code>WHERE type != 'tombstone'</code>. Never hard-delete them.</li>
         </ul>
       </section>
 
       <div class="sec-divider"></div>
 
-      <!-- Core Tables -->
-      <section class="sec" id="tables">
+      <!-- ── A.2 Core Tables ───────────────────── -->
+      <section class="spec-section" id="tables">
         <div class="sec-label">A.2</div>
         <h2 class="sec-title">Core Tables</h2>
 
         <h3 class="sec-sub" id="t-packages">packages</h3>
-        <p>One row per <code>.chronpkg</code> bundle manifest. Events reference packages via <code>package_id</code>.</p>
+        <p style="color:var(--ink-mid); line-height:1.7;">One row per <code>.chronpkg</code> bundle manifest. Events reference packages via <code>package_id</code>.</p>
         <pre><code><span class="sql-comment">-- Packages (from .chronpkg manifest)</span>
 <span class="sql-keyword">CREATE TABLE</span> packages (
   id              <span class="sql-type">TEXT</span> <span class="sql-keyword">PRIMARY KEY</span>,   <span class="sql-comment">-- package_id from manifest</span>
@@ -197,7 +305,7 @@
 );</code></pre>
 
         <h3 class="sec-sub" id="t-events">events</h3>
-        <p>One row per <code>.chron</code> file. The <code>data</code> column holds the complete original JSON for full fidelity. All other columns are indexed projections.</p>
+        <p style="color:var(--ink-mid); line-height:1.7;">One row per <code>.chron</code> file. The <code>data</code> column holds the complete original JSON for full fidelity. All other columns are indexed projections.</p>
         <pre><code><span class="sql-comment">-- Events (one row per .chron file)</span>
 <span class="sql-keyword">CREATE TABLE</span> events (
   id                    <span class="sql-type">TEXT</span> <span class="sql-keyword">PRIMARY KEY</span>,   <span class="sql-comment">-- UUID-v4</span>
@@ -227,15 +335,15 @@
   updated_at            <span class="sql-type">TIMESTAMP</span> <span class="sql-keyword">DEFAULT</span> CURRENT_TIMESTAMP
 );
 
-<span class="sql-keyword">CREATE INDEX</span> idx_events_package      <span class="sql-keyword">ON</span> events(package_id);
-<span class="sql-keyword">CREATE INDEX</span> idx_events_type         <span class="sql-keyword">ON</span> events(type);
-<span class="sql-keyword">CREATE INDEX</span> idx_events_start_unix   <span class="sql-keyword">ON</span> events(start_unix);
+<span class="sql-keyword">CREATE INDEX</span> idx_events_package       <span class="sql-keyword">ON</span> events(package_id);
+<span class="sql-keyword">CREATE INDEX</span> idx_events_type          <span class="sql-keyword">ON</span> events(type);
+<span class="sql-keyword">CREATE INDEX</span> idx_events_start_unix    <span class="sql-keyword">ON</span> events(start_unix);
 <span class="sql-keyword">CREATE INDEX</span> idx_events_temporal_scope <span class="sql-keyword">ON</span> events(temporal_scope);
-<span class="sql-keyword">CREATE INDEX</span> idx_events_geo_scope    <span class="sql-keyword">ON</span> events(geographic_scope);
-<span class="sql-keyword">CREATE INDEX</span> idx_events_sig_value    <span class="sql-keyword">ON</span> events(significance_value);</code></pre>
+<span class="sql-keyword">CREATE INDEX</span> idx_events_geo_scope     <span class="sql-keyword">ON</span> events(geographic_scope);
+<span class="sql-keyword">CREATE INDEX</span> idx_events_sig_value     <span class="sql-keyword">ON</span> events(significance_value);</code></pre>
 
         <h3 class="sec-sub" id="t-relations">event_relations</h3>
-        <p>Normalized from the event's <code>relations</code> array. <code>target_event_id</code> may be NULL when only <code>target_url</code> is known (unresolved cross-file relation).</p>
+        <p style="color:var(--ink-mid); line-height:1.7;">Normalized from the event's <code>relations</code> array. <code>target_event_id</code> may be NULL when only <code>target_url</code> is known (unresolved cross-file relation).</p>
         <pre><code><span class="sql-keyword">CREATE TABLE</span> event_relations (
   id              <span class="sql-type">INTEGER</span> <span class="sql-keyword">PRIMARY KEY AUTOINCREMENT</span>,
   source_event_id <span class="sql-type">TEXT</span> <span class="sql-keyword">NOT NULL REFERENCES</span> events(id),
@@ -250,7 +358,7 @@
 );</code></pre>
 
         <h3 class="sec-sub" id="t-metrics">event_metrics</h3>
-        <p>Normalized from <code>significance.metrics[]</code>. Enables efficient per-domain significance queries.</p>
+        <p style="color:var(--ink-mid); line-height:1.7;">Normalized from <code>significance.metrics[]</code>. Enables efficient per-domain significance queries.</p>
         <pre><code><span class="sql-keyword">CREATE TABLE</span> event_metrics (
   id           <span class="sql-type">INTEGER</span> <span class="sql-keyword">PRIMARY KEY AUTOINCREMENT</span>,
   event_id     <span class="sql-type">TEXT</span> <span class="sql-keyword">NOT NULL REFERENCES</span> events(id),
@@ -260,7 +368,7 @@
 );</code></pre>
 
         <h3 class="sec-sub" id="t-media">event_media</h3>
-        <p>Normalized from the event's <code>media[]</code> array.</p>
+        <p style="color:var(--ink-mid); line-height:1.7;">Normalized from the event's <code>media[]</code> array.</p>
         <pre><code><span class="sql-keyword">CREATE TABLE</span> event_media (
   id           <span class="sql-type">INTEGER</span> <span class="sql-keyword">PRIMARY KEY AUTOINCREMENT</span>,
   event_id     <span class="sql-type">TEXT</span> <span class="sql-keyword">NOT NULL REFERENCES</span> events(id),
@@ -271,7 +379,7 @@
 );</code></pre>
 
         <h3 class="sec-sub" id="t-calendars">calendars</h3>
-        <p>Resolved calendar definition cache. Populated on first fetch; updated when <code>canonical_url</code> returns a newer version.</p>
+        <p style="color:var(--ink-mid); line-height:1.7;">Resolved calendar definition cache. Populated on first fetch; updated when <code>canonical_url</code> returns a newer version.</p>
         <pre><code><span class="sql-keyword">CREATE TABLE</span> calendars (
   id              <span class="sql-type">TEXT</span> <span class="sql-keyword">PRIMARY KEY</span>,
   canonical_url   <span class="sql-type">TEXT</span>,
@@ -283,7 +391,7 @@
 );</code></pre>
 
         <h3 class="sec-sub" id="t-universes">universes</h3>
-        <p>Resolved universe definition cache. The <code>canon_scopes</code> column holds the JSON array of valid scope objects for this universe.</p>
+        <p style="color:var(--ink-mid); line-height:1.7;">Resolved universe definition cache. The <code>canon_scopes</code> column holds the JSON array of valid scope objects for this universe.</p>
         <pre><code><span class="sql-keyword">CREATE TABLE</span> universes (
   id               <span class="sql-type">TEXT</span> <span class="sql-keyword">PRIMARY KEY</span>,
   canonical_url    <span class="sql-type">TEXT</span>,
@@ -298,8 +406,8 @@
 
       <div class="sec-divider"></div>
 
-      <!-- Example Queries -->
-      <section class="sec" id="queries">
+      <!-- ── A.3 Example Queries ────────────────── -->
+      <section class="spec-section" id="queries">
         <div class="sec-label">A.3</div>
         <h2 class="sec-title">Example Queries</h2>
 
@@ -328,7 +436,7 @@
   <span class="sql-keyword">AND</span> r.relation_type <span class="sql-keyword">IN</span> (<span class="sql-type">'causes'</span>,<span class="sql-type">'caused_by'</span>,<span class="sql-type">'influences'</span>,<span class="sql-type">'influenced_by'</span>);</code></pre>
 
         <h3 class="sec-sub">Tombstone-safe upsert respecting tombstone priority</h3>
-        <p>When ingesting events from a feed or merge operation, tombstone records must always win regardless of insert order.</p>
+        <p style="color:var(--ink-mid); line-height:1.7;">When ingesting events from a feed or merge operation, tombstone records must always win regardless of insert order.</p>
         <pre><code><span class="sql-keyword">INSERT INTO</span> events (id, type, data) <span class="sql-keyword">VALUES</span> (?, ?, ?)
 <span class="sql-keyword">ON CONFLICT</span>(id) <span class="sql-keyword">DO UPDATE SET</span>
   type = <span class="sql-keyword">CASE</span>
@@ -340,29 +448,49 @@
     <span class="sql-keyword">WHEN</span> events.type   = <span class="sql-type">'tombstone'</span> <span class="sql-keyword">THEN</span> events.data
     <span class="sql-keyword">ELSE</span> excluded.data <span class="sql-keyword">END</span>;</code></pre>
 
-        <div class="callout callout-note">
-          <div class="callout-label">Tombstone Rule</div>
-          The CASE logic above implements the tombstone priority rule: once a row is marked as a tombstone, no subsequent insert or update may overwrite it with a non-tombstone record. This mirrors the normative requirement in §6.10 and §7.1.
+        <div class="callout callout--note">
+          <div class="callout-icon">ℹ</div>
+          <div class="callout-body"><strong>Tombstone Rule</strong> — The CASE logic above implements the tombstone priority rule: once a row is marked as a tombstone, no subsequent insert or update may overwrite it with a non-tombstone record. This mirrors the normative requirement in §6.10 and §7.1.</div>
         </div>
       </section>
 
     </main>
   </div>
 
-  <footer>
-    <div class="footer-logo">OpenChronology</div>
-    <ul class="footer-links">
-      <li><a href="specification.html">Specification</a></li>
-      <li><a href="https://schemas.openchronology.org">Schemas</a></li>
-      <li><a href="https://github.com/knoj/openchronology">GitHub</a></li>
-    </ul>
-    <div class="footer-meta">Appendix A · Non-Normative · v0.3</div>
+  <!-- ── Footer ─────────────────────────────── -->
+  <footer class="spec-footer">
+    <div class="spec-footer-inner">
+      <div class="spec-footer-brand">OpenChronology</div>
+      <ul class="spec-footer-links">
+        <li><a href="specification.html">Specification</a></li>
+        <li><a href="https://schemas.openchronology.org">Schemas</a></li>
+        <li><a href="https://github.com/knoj/openchronology">GitHub</a></li>
+      </ul>
+      <div class="spec-footer-meta">Appendix A · Non-Normative · v0.3</div>
+    </div>
   </footer>
 
   <script>
+    // Mobile nav toggle
+    const navToggle = document.querySelector('.nav-toggle');
+    const navLinks  = document.querySelector('.nav-links');
+    if (navToggle) {
+      navToggle.addEventListener('click', () => {
+        const open = navLinks.classList.toggle('is-open');
+        navToggle.setAttribute('aria-expanded', open);
+      });
+      document.addEventListener('click', e => {
+        if (!e.target.closest('.site-nav')) {
+          navLinks.classList.remove('is-open');
+          navToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
+    // TOC active link via IntersectionObserver
     const sections = document.querySelectorAll('[id]');
-    const tocLinks = document.querySelectorAll('#toc a');
-    const observer = new IntersectionObserver(entries => {
+    const tocLinks  = document.querySelectorAll('#toc a');
+    const observer  = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           tocLinks.forEach(l => l.classList.remove('active'));
@@ -370,7 +498,7 @@
           if (active) active.classList.add('active');
         }
       });
-    }, { rootMargin: '-80px 0px -60% 0px' });
+    }, { rootMargin: '-54px 0px -60% 0px' });
     sections.forEach(s => observer.observe(s));
   </script>
 </body>
