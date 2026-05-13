@@ -742,22 +742,5 @@ include $_SERVER['DOCUMENT_ROOT'] . '/partials/header.php';
     </div>
   </div>
 
-  <script>
-    // Mobile nav toggle
-    const toggle = document.querySelector('.nav-toggle');
-    const links  = document.querySelector('.nav-links');
-    if (toggle && links) {
-      toggle.addEventListener('click', () => {
-        const isOpen = links.classList.toggle('is-open');
-        toggle.setAttribute('aria-expanded', String(isOpen));
-      });
-      document.addEventListener('click', (e) => {
-        if (!e.target.closest('.site-nav')) {
-          links.classList.remove('is-open');
-          toggle.setAttribute('aria-expanded', 'false');
-        }
-      });
-    }
-  </script>
 
 <?php include $_SERVER['DOCUMENT_ROOT'] . '/partials/footer.php'; ?>

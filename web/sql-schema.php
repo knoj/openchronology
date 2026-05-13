@@ -427,21 +427,6 @@ include $_SERVER['DOCUMENT_ROOT'] . '/partials/header.php';
   </div>
 
   <script>
-    // Mobile nav toggle
-    const navToggle = document.querySelector('.nav-toggle');
-    const navLinks  = document.querySelector('.nav-links');
-    if (navToggle) {
-      navToggle.addEventListener('click', () => {
-        const open = navLinks.classList.toggle('is-open');
-        navToggle.setAttribute('aria-expanded', open);
-      });
-      document.addEventListener('click', e => {
-        if (!e.target.closest('.site-nav')) {
-          navLinks.classList.remove('is-open');
-          navToggle.setAttribute('aria-expanded', 'false');
-        }
-      });
-    }
 
     // TOC active link via IntersectionObserver
     const sections = document.querySelectorAll('[id]');
