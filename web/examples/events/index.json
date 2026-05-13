@@ -1,0 +1,24 @@
+{
+  "schema_version": "0.3",
+  "updated": "2026-05-11",
+  "base_url": "https://openchronology.org/examples/events/",
+  "events": [
+    "apollo-11-moon-landing.chron",
+    "battle-of-hastings.chron",
+    "black-death-1347.chron",
+    "brotherhood-tree-sprouting.chron",
+    "byzantine-empire.chron",
+    "charlemagne-coronation.chron",
+    "fall-of-constantinople-1453.chron",
+    "fall-of-rome.chron",
+    "great-schism-1054.chron",
+    "gutenberg-press.chron",
+    "holy-roman-empire.chron",
+    "hundred-years-war.chron",
+    "magna-carta.chron",
+    "medieval-era.chron",
+    "ottoman-empire-rise.chron",
+    "the-crusades.chron",
+    "viking-age.chron"
+  ]
+}

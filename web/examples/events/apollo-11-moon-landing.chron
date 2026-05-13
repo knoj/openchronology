@@ -1,0 +1,99 @@
+{
+  "meta": {
+    "schema_version": "0.3",
+    "canonical_url": "https://1000yearproject.org/events/apollo-11-moon-landing.chron",
+    "author": "OpenChronology Working Group",
+    "license": "CC-BY-4.0",
+    "generator": "OpenChronology Author — Hand-authored example",
+    "$schema": "https://schemas.openchronology.org/v0.3/full.schema.json"
+  },
+  "definitions": {
+    "universes": {
+      "real": { "type": "builtin" }
+    },
+    "calendars": {
+      "gregorian": { "type": "builtin" }
+    },
+    "bodies": {
+      "moon": { "type": "builtin" }
+    }
+  },
+  "event": {
+    "id": "7e2d9a14-c53f-4b88-ae0d-1f96c804d72b",
+    "type": "event",
+    "content": {
+      "title": "Apollo 11 — First Crewed Lunar Landing",
+      "description": "At **20:17:40 UTC on July 20, 1969**, NASA astronauts **Neil Armstrong** and **Buzz Aldrin** landed the Lunar Module *Eagle* at **Tranquility Base** in the Sea of Tranquility — becoming the first humans ever to land on the Moon. Michael Collins remained in lunar orbit aboard Command Module *Columbia*.\n\nApproximately six hours after landing, Armstrong descended the ladder and spoke the iconic words: *\"That's one small step for [a] man, one giant leap for mankind.\"* Aldrin followed nineteen minutes later. The two spent roughly two and a half hours on the lunar surface, collecting 47.5 pounds (21.5 kg) of rock and soil samples, planting the American flag, and deploying scientific instruments.\n\nWatched live by an estimated **650 million viewers** worldwide, Apollo 11 fulfilled President Kennedy's 1961 challenge to land a man on the Moon before the decade's end. The crew splashed down safely in the Pacific Ocean on July 24, 1969.",
+      "description_format": "markdown",
+      "date_label": "July 20, 1969 — 20:17 UTC",
+      "tags": [
+        "space", "nasa", "apollo-program", "moon", "neil-armstrong",
+        "buzz-aldrin", "michael-collins", "cold-war", "science",
+        "united-states", "1000-year-project"
+      ],
+      "sources": [
+        {
+          "url": "https://en.wikipedia.org/wiki/Apollo_11",
+          "title": "Wikipedia — Apollo 11",
+          "type": "wikipedia"
+        },
+        {
+          "url": "https://www.nasa.gov/mission/apollo-11/",
+          "title": "NASA Apollo 11 Mission Page",
+          "type": "official",
+          "description": "Official NASA mission documentation and archive"
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Tranquility_Base",
+          "title": "Wikipedia — Tranquility Base",
+          "type": "wikipedia"
+        }
+      ],
+      "translations": {
+        "fr": {
+          "title": "Apollo 11 — Premier alunissage habité",
+          "description": "Le 20 juillet 1969 à 20h17 UTC, Neil Armstrong et Buzz Aldrin posent le module lunaire Eagle sur la Mer de la Tranquillité, devenant les premiers êtres humains à marcher sur la Lune.",
+          "date_label": "20 juillet 1969"
+        }
+      }
+    },
+    "temporal": {
+      "universe": "real",
+      "calendar": "gregorian",
+      "start_value": "1969-07-20T20:17:40Z",
+      "end_value": "1969-07-21T17:54:00Z",
+      "precision": "second",
+      "format_hint": {
+        "pattern": "MMMM D, YYYY",
+        "era_label": null
+      },
+      "uncertainty": {
+        "type": "range",
+        "margin_value": 0,
+        "margin_unit": "second",
+        "confidence": 1.0
+      }
+    },
+    "spatial": {
+      "body": "moon",
+      "crs": "wgs84",
+      "custom_region": "Mare Tranquillitatis — Sea of Tranquility",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [23.47314, 0.67416, 0],
+        "label": "Tranquility Base"
+      }
+    },
+    "significance": {
+      "value": 1000,
+      "temporal_scope": "generational",
+      "geographic_scope": "global",
+      "metrics": [
+        { "type": "scientific",    "value": 1000 },
+        { "type": "political",     "value": 980 },
+        { "type": "cultural",      "value": 1000 },
+        { "type": "technological", "value": 1000 }
+      ]
+    }
+  }
+}
